@@ -1,0 +1,27 @@
+stopweb - Criticità e condizioni di utilizzo
+
+Lo strumento è stato sviluppato per accelerare le operazioni di
+consultazione delle presenze in azienda.
+
+Fa risparmiare tempo e permette di fare calcoli rapidamente sul
+tempo lavorato per semplificare la rendicontazione.
+
+In ogni caso non si può sostituire allo strumento ufficiale
+che va preferito per l'attendibilità dei risultati.
+
+Questo invece presenta delle criticità:
+
+ - Fa i calcoli delle pres./assen. basandosi solo sulle timbrature
+ - Non è mai la verità, ma un prodotto delle sue considerazioni;
+ - TRASFERTA e SMART WORKING non fanno PRESENZA (come fosse FESTIVO);
+ - Non restituisce i contatori (ferie, permessi, etc...);
+ - Non entra nel merito dei giustificativi ma solo delle voci elaborate;
+ - FORSE(?) il sito presenze preferisce non essere interrogato;
+
+Inoltre:
+
+ Mantiene sulla dir <profilo>/userdata tutte le informazioni in chiaro;
+ <profilo>/config/configuration.yaml può conservare le credenziali;
+ <profilo>/userdata/auth conserva i cookie in chiaro;
+ <profilo>/userdata/cache conserva cache dipendenti e timbrature;
+ <profilo>/userdata/logs conserva i log (con informazioni sensibili?);
