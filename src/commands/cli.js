@@ -226,8 +226,11 @@ switch (args.command) {
         let add = (args.options.add?.length > 0);
         let remove = (args.options.remove?.length > 0);
 
-        if(args.options.dumporari === true){
-            await commandGetOrari();
+        if(args.options.orari === true){
+            if(args.options.json === true)
+                await commandGetOrari({ asJson: true });
+            else
+                await commandGetOrari();
             process.exit();
         }
 

@@ -379,6 +379,8 @@ export async function commandHelp({ showSintesi = true, comando, grid } = {}){
                 { uso: 'preferiti --add "[query]"', descrizione: 'Aggiunge il dipendente (matching with query) alla lista dei preferiti' },
                 { uso: 'preferiti --remove [id]', descrizione: 'Rimuove il dipendente (id) dalla lista dei preferiti' },
                 { uso: 'preferiti --json', descrizione: 'Restituisce il json originale'},
+                { uso: 'preferiti --orari', descrizione: 'Mostra la lista delle voci orario disponibili'},
+                { uso: 'preferiti --orari --json', descrizione: 'Mostra la lista delle voci orario disponibili -json originale'},
             ]
         },
         'manifesto' : {

@@ -174,7 +174,7 @@ export function validateArgs(command, options){
             'remove': isStringNumber,
             'notot': isBooleanTrueValue,
             'json': isBooleanTrueValue,
-            'dumporari': isBooleanTrueValue,
+            'orari': isBooleanTrueValue,
         },
         'maniavanti': {
             'stacce': isBooleanTrueValue,

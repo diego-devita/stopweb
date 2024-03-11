@@ -13,11 +13,28 @@ const styles = {
     highlighted: chalk.bgGray
 };
 
-export async function commandGetOrari(){
+export async function commandGetOrari({ asJson = false } = {}){
 
     let o = await fetchOrariPreferitiFromApi();
 
-    console.log(JSON.stringify(o, null, 2));
+    if(asJson)
+        console.log(JSON.stringify(o, null, 2));
+    else
+        o.orari.forEach(orario=>{
+
+            function pad(o, pad){
+                const r = o?.toString().padEnd(pad, ' ');
+                return (r) ? r : '-';
+            }
+
+            const id = pad(orario.id, 5);
+            const cvdescr = pad(orario.cvdescr, 10);
+            const descr = pad(orario.descr, 50);
+            const oreminime = pad(orario.oreminime, 4);
+            const oremedie = pad(orario.oremedie, 4);
+            console.log(`${id} ${cvdescr} ${descr} ${oreminime} ${oremedie}`);
+
+        });
 }
 
 export async function commandGetPreferitiDipendenti({ showTotal = true, asJson = false} = {}){
