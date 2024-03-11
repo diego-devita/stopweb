@@ -1,15 +1,15 @@
 # Stopweb (CLI)
 
-## Environment vars
+## Variabili d'ambiente
 Il progetto utilizza le seguenti variabili d'ambiente:
 
-| Name                          | Description                         | Default Value                                  |
+| Nome                          | Descrizione                         | Valore Default                                 |
 | ----------------------------- | ------------------------------------| -----------------------------------------------|
 | STOPWEB_PROFILI_BASEDIR_PATH  | Il path dei profili                 | ~/.stopweb/profili                             |
 
 
 ## Pre-requisiti
-- Installa [Node.js](https://nodejs.org/en/) version v18.19.1
+- Installa [Node.js](https://nodejs.org/en/) versione v18.19.1
 
 ## Per iniziare
 - Clona il repository
@@ -52,4 +52,4 @@ stopweb condizioni --accetta
 ## License and Attributions
 
 The license for this project can be found in the [LICENSE](./LICENSE.txt) file.
-Attributions for third-party components used by this project are located in [legal/ATTRIBUTIONS.txt](./legal/ATTRIBUTIONS.txt).
+Attributions for third-party components used by this project are located in [legal/ATTRIBUTIONS.md](./legal/ATTRIBUTIONS.md).
