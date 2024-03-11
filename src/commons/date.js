@@ -146,7 +146,7 @@ export function addFormatterPartsToDate(dataTimbratura){
     dataTimbratura.parts['en-US'] = formatParts(dataTimbratura.date, 'en-US');
 }
 
-export function valutaDate({dataInizio, dataFine, oggi, ieri, mese, anno, daOggiMeno} = {}){
+export function valutaDate({dataInizio, dataFine, oggi, ieri, mese, anno, daOggiMeno, data} = {}){
 
     const getFirstDayAndLastDayOfMonth = (monthAsNumber, yearAsYYYY = new Date().getFullYear())=>{
         // Nota: monthAsNumber dovrebbe essere nel range 1-12
@@ -220,39 +220,72 @@ export function valutaDate({dataInizio, dataFine, oggi, ieri, mese, anno, daOggi
 
     function validaDate(dataInizio, dataFine) {
 
+        const regexFormatoYYYYMMDD = /^\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/;
+        const regexFormatoDDMMYYYY = /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/;
+
+        function stringToDate(dataString) {
+
+            let isYYYYMMDD;
+            let isDDMMYYYY;
+            if ( regexFormatoYYYYMMDD.test(dataString) )
+                isYYYYMMDD = true;
+            else if( regexFormatoDDMMYYYY.test(dataString) )
+                isDDMMYYYY = true;
+            else
+                throw new Error("Formato data non valido. Utilizzare YYYYMMDD o DD-MM-YYYY.");
+
+            let anno;
+            let mese;
+            let giorno;
+
+            if(isYYYYMMDD){
+                anno = parseInt(dataString.substring(0, 4), 10);
+                mese = parseInt(dataString.substring(4, 6), 10) - 1;
+                giorno = parseInt(dataString.substring(6, 8), 10);
+            }
+            if(isDDMMYYYY){
+                anno = parseInt(dataString.substring(6, 10), 10);
+                mese = parseInt(dataString.substring(3, 5), 10) - 1;
+                giorno = parseInt(dataString.substring(0, 2), 10);
+            }
+
+            const data = new Date(anno, mese, giorno);
+            // Verifica che i componenti della data siano coerenti con quelli forniti
+            if (data.getFullYear() === anno && data.getMonth() === mese && data.getDate() === giorno) {
+                return { data, YYYYMMDD: `${anno}${(mese+1).toString().padStart(2,'0')}${giorno.toString().padStart(2,'0')}`};
+            }
+
+            return null;
+        }
+
         // Verifica del formato
-        const regexFormato = /^\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/;
-        if (!regexFormato.test(dataInizio) || !regexFormato.test(dataFine)) {
-        throw new Error("Formato data non valido. Utilizzare YYYYMMDD.");
+        if (
+            ( !regexFormatoYYYYMMDD.test(dataInizio) && !regexFormatoDDMMYYYY.test(dataInizio) )
+            ||
+            ( !regexFormatoYYYYMMDD.test(dataFine) && !regexFormatoDDMMYYYY.test(dataFine) )
+        ) {
+            throw new Error("Formato data non valido. Utilizzare YYYYMMDD o DD-MM-YYYY.");
         }
 
         // Conversione e validità delle date
         const dataInizioObj = stringToDate(dataInizio);
         const dataFineObj = stringToDate(dataFine);
 
-        if (!(dataInizioObj && dataFineObj)) {
-        throw new Error("Una delle date non è valida.");
+        if (!(dataInizioObj.data && dataFineObj.data)) {
+            throw new Error("Una delle date non è valida.");
         }
 
         // Confronto delle date
-        if (dataInizioObj > dataFineObj) {
-        throw new Error("La data di fine deve venire dopo la data di inizio.");
+        if (dataInizioObj.data > dataFineObj.data) {
+            throw new Error("La data di fine deve venire dopo la data di inizio.");
         }
 
         //validazione superata
-    }
 
-    function stringToDate(dataString) {
-        const anno = parseInt(dataString.substring(0, 4), 10);
-        const mese = parseInt(dataString.substring(4, 6), 10) - 1; // I mesi sono 0-indexed in JS
-        const giorno = parseInt(dataString.substring(6, 8), 10);
-
-        const data = new Date(anno, mese, giorno);
-        // Verifica che i componenti della data siano coerenti con quelli forniti
-        if (data.getFullYear() === anno && data.getMonth() === mese && data.getDate() === giorno) {
-        return data;
+        return {
+            dataInizio: dataInizioObj,
+            dataFine: dataFineObj
         }
-        return null;
     }
 
     if(mese !== true)
@@ -285,10 +318,18 @@ export function valutaDate({dataInizio, dataFine, oggi, ieri, mese, anno, daOggi
     }
     else if(dataInizio && !dataFine){
         dataFine = getTodayDateAsYYYYMMDD();
-        validaDate(dataInizio, dataFine);
+        const dateValidate = validaDate(dataInizio, dataFine);
+        dataInizio = dateValidate.dataInizio.YYYYMMDD;
     }
     else if(dataInizio && dataFine){
-        validaDate(dataInizio, dataFine);
+        const dateValidate = validaDate(dataInizio, dataFine);
+        dataInizio = dateValidate.dataInizio.YYYYMMDD;
+        dataFine = dateValidate.dataFine.YYYYMMDD;
+    }
+    else if(data){
+        const dateValidate = validaDate(data, data);
+        dataInizio = dateValidate.dataInizio.YYYYMMDD;
+        dataFine = dateValidate.dataFine.YYYYMMDD;
     }
     else{
         const o = getTodayDateAsYYYYMMDD();

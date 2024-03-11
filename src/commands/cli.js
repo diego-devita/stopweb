@@ -142,9 +142,6 @@ switch (args.command) {
         break;
     case 'fetch':
 
-        //se l'intervallo data non è stato specificato, per default è oggi
-        const dateIntervallo = valutaDate(args.options);
-
         const fetchOptions = {};
         fetchOptions.excludeTodayFromSurplus = !(args.options.includiOggiInTotali === true);
         fetchOptions.fetchTodayAlways = !(args.options.oggiNoRefetch === true);
@@ -154,6 +151,9 @@ switch (args.command) {
         fetchOptions.fillGaps = (args.options.fillGaps === true);
 
         try{
+            //se l'intervallo data non è stato specificato, per default è oggi
+            const dateIntervallo = valutaDate(args.options);
+
             if(args.options.json == true || args.options.json == 'originale' || args.options.json == 'o' ){
                 await commandFetchOriginalJson(dateIntervallo);
             }

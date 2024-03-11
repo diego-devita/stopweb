@@ -81,6 +81,10 @@ export function validateArgs(command, options){
         return (value === true);
     }
 
+    const isStringDateAsDDMMYYYY = (value) => {
+        return typeof(value) === 'string' && /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d\d$/.test(value);
+    }
+
     const isStringDateAsYYYYMMDD = (value) => {
         return typeof(value)==='string' &&  /^(19|20)\d\d(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/.test(value);
     }
@@ -123,8 +127,9 @@ export function validateArgs(command, options){
             'noheadless': isBooleanTrueValue,
         },
         'fetch': {
-            'dataInizio': isStringDateAsYYYYMMDD,
-            'dataFine': isStringDateAsYYYYMMDD,
+            'data': (value)=>{ return (isStringDateAsYYYYMMDD(value) || isStringDateAsDDMMYYYY(value)); },
+            'dataInizio': (value)=>{ return (isStringDateAsYYYYMMDD(value) || isStringDateAsDDMMYYYY(value)); },
+            'dataFine': (value)=>{ return (isStringDateAsYYYYMMDD(value) || isStringDateAsDDMMYYYY(value)); },
             'mese': (value) => { return ( isStringMonthAsMM(value) || isBooleanTrueValue(value) ); },
             'anno': isStringYearAsYYYY,
             'oggi': isBooleanTrueValue,
