@@ -731,9 +731,9 @@ class Config {
 }
 
 const nome = 'stopweb';
-const versione = '1.1.0';
-const releaseDate = '11/03/2024';
-const chiaveTOS = '552e91487eb12ae63984d1ff473e2be1';
+const versione = '1.2.0';
+const releaseDate = '12/03/2024';
+const chiaveTOS = 'ff97941154c92b0c515681f754b0bfb9';
 
 const profiliBaseDir = {
     //nome della var d'ambiente contenente il path usato per recuperare i profili

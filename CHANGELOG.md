@@ -4,6 +4,15 @@ Tutte le modifiche significative a questo progetto verranno documentate in quest
 
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), e questo progetto aderisce a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2024-03-12
+
+### Changed
+- Comando Rubrica - La modalità `print` di default è diventata `short3` invece di `short2`
+
+### Added
+- Comando Rubrica - Aggiunta opzione `--sortby` `(nome|cognome|id|stato|descrizione)` valida anche per i gruppi
+- Comando Rubrica - Aggiunto valore `short3` all'opzione `--print` che garantisce migliore leggibilità
+
 ## [1.1.0] - 2024-03-11
 
 ### Changed
