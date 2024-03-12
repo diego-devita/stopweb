@@ -314,7 +314,8 @@ switch (args.command) {
                     printMode: args.options?.print,
                     showTotal: showRubricaTotal,
                     group,
-                    filter
+                    filter,
+                    sortBy: args.options.sortby
                 });
 
             //mostra il tempo speso solo se l'opzione print non è 'json' e se non è stata usata l'opzione noTimeSpent

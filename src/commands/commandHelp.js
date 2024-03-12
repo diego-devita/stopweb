@@ -367,6 +367,7 @@ export async function commandHelp({ showSintesi = true, comando, grid } = {}){
                 { uso: 'rubrica [..opz] --gruppo [nomegruppo]', descrizione: 'Mostra i risultati raggruppati come da [nomegruppo] corrispondente'},
                 { uso: 'rubrica [..opz] --print [short1|short2|long]', descrizione: 'Mostra i risultati con la modalità scelta che per default è short2' },
                 { uso: 'rubrica [..opz] --print json', descrizione: 'Mostra il json originale (usare senza opzioni a monte per: no filter)' },
+                { uso: 'rubrica [..opz] --sortby [nome|cognome|id|stato|descrizione]', descrizione: 'Decide l\'ordinamento dell\'elenco (anche sui gruppi)'},
             ]
         },
         'preferiti' : {

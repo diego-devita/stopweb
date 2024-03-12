@@ -172,6 +172,7 @@ export function validateArgs(command, options){
             'gruppo': isStringNonEmpty,
             'presenti': (value) => { return [true, 'now', 'adesso', 'oggi', 'domani'].includes(value) },
             'noTimeSpent': isBooleanTrueValue,
+            'sortby': (value) => { return ['nome', 'cognome', 'id', 'stato', 'descrizione'].includes(value) },
         },
         'preferiti': {
             'list': isBooleanTrueValue,
