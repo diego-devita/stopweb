@@ -32,6 +32,26 @@ const styles = {
         stileBGHeader: chalk.bgHex('#444'),
         stileBGHeader2: chalk.underline.bgHex('#444'),
     },
+    short3: {
+        stileHeader: chalk.bold.white.bgGray, //chalk.bold.black.bgHex('#444'),
+        stileSmart: chalk.bgBlue.bold,
+        stileMissione: chalk.bgMagenta.bold,
+        stileAltro: chalk.bgYellow.bold,
+        stileNull: chalk.greenBright.bold,
+        stileError: chalk.redBright.bold,
+
+        stileNome: chalk.yellow.dim.bold,
+        stileCognome: chalk.yellow.bold,
+        stileTelefono: chalk.dim,
+        stileId: chalk.yellow.dim.bold,
+
+        stileAssente: chalk.redBright.bold,
+        stilePresente: chalk.greenBright.bold,
+        stileEsente: chalk.yellowBright.bold,
+        stileX: chalk.cyanBright.bold,
+
+        styleVoceAssente: chalk.cyanBright,
+    },
     long: {
         stileAssente: chalk.redBright.bold,
         stilePresente: chalk.greenBright.bold,
@@ -120,6 +140,10 @@ export async function commandRubrica({
                 case 'short2':
                     printHeader = (customConsole = console)=>{ printDipendenteInRubricaShort2({ isHeader: true, customConsole }) };
                     printDipendente = printDipendenteInRubricaShort2;
+                    break;
+                case 'short3':
+                    printHeader = (customConsole = console)=>{ printDipendenteInRubricaShort3({ isHeader: true, customConsole }) };
+                    printDipendente = (obj) => { printDipendenteInRubricaShort3({ ...obj, sortBy }); }
                     break;
                 case 'long':
                     printDipendente = printDipendenteInRubricaLong;
@@ -530,6 +554,279 @@ function printDipendenteInRubricaShort2({ result, isHeader = false, customConsol
             domani: domani,
             telefono: telefono,
             id: id
+        };
+
+        printRow(columns, row);
+        //console.log(`${macrostato}${nominativo}${oggi}${domani}`);
+    }
+}
+
+function printDipendenteInRubricaShort3({ result, isHeader = false, customConsole = console, sortBy  }){
+
+    if(result && result?._invalid === true)
+        return;
+
+    const s = styles.short3;
+
+    function propToString(obj){
+        if(obj.telelavoro + obj.altro + obj.misstrasf > 1)
+            return styles.short3.stileError(" ERROR ");
+        if(!obj.telelavoro && !obj.altro && !obj.misstrasf)
+            return styles.short3.stileNull(' PRES?!');
+        if(obj.telelavoro)
+            return styles.short3.stileSmart(" SMART ");
+        if(obj.altro)
+            return styles.short3.stileAltro(" ALTRO ");
+        if(obj.misstrasf)
+            return styles.short3.stileMissione(" MISS. ");
+    }
+
+    function propsToString(obj, props){
+        if(obj)
+            return propToString(obj);
+        else
+            //return s.stileNull(' NULLO ');
+            return s.stileNull(' PRES? ');
+    }
+
+    const columns = {
+        presente: {
+            header:  ['S'],
+            width: 1,
+            borderLeft: '|',
+            borderRight: '|',
+            headerStyle: s.stileHeader,
+            paddingChar: '-',
+            borderStyle: chalk.gray.bold,
+        },
+        descrizione: {
+            header:  ['DESCR.'],
+            paddingChar: '-',
+            width: 6,
+            // borderLeft: '[',
+            borderRight: '|',
+            headerStyle: s.stileHeader,
+            borderStyle: chalk.gray.bold,
+        },
+        nominativo: {
+            header: ['NOMINATIVO'],
+            align: 'left',
+            paddingChar: '-',
+            width: 30,
+            headerStyle: s.stileHeader
+            //borderLeft: '[',
+            //borderRight: ']'
+        },
+        oggi: {
+            header: ['OGG.'],
+            align: 'center',
+            width: 7,
+            borderLeft: '|',
+            headerStyle: s.stileHeader,
+            //borderRight: ']'
+            borderStyle: chalk.gray.bold
+        },
+        domani: {
+            header: ['DOM.'],
+            align: 'center',
+            width: 7,
+            borderLeft: '|',
+            borderRight: '|',
+            headerStyle: s.stileHeader,
+            borderStyle: chalk.gray.bold,
+        },
+        telefono: {
+            header: ['TELEFONO'],
+            align: 'center',
+            width: 14,
+            //borderLeft: '|',
+            borderRight: '|',
+            headerStyle: s.stileHeader,
+            borderStyle: chalk.gray.bold,
+        },
+        id: {
+            header: ['ID'],
+            align: 'center',
+            width: 5,
+            //borderLeft: '|',
+            borderRight: '|',
+            headerStyle: s.stileHeader,
+            borderStyle: chalk.gray.bold,
+        },
+    };
+
+    const props = [
+        { propertyName: 'telelavoro', abbr: 'SW' },
+        { propertyName: 'misstrasf', abbr: 'MT' },
+        { propertyName: 'altro', abbr: 'ALTRO' }
+    ];
+
+    function printHeaders(columns, layers){
+
+        for(let iHeader = 0; iHeader < layers; iHeader++){
+            const header = Object.values(columns)
+                .map( col => {
+                    let processedHeader;
+
+                    let bL = (col?.borderLeft) ? col.borderLeft : '';
+                    let bR = (col?.borderRight) ? col.borderRight : '';
+                    if(col.borderStyle){
+                        bL = col.borderStyle(bL);
+                        bR = col.borderStyle(bR);
+                    }
+                    const padChar = (col?.paddingChar) ? col.paddingChar : ' ';
+                    let content = col.header[iHeader];
+                    if(!content) content = padChar;
+                    switch(col?.align){
+                        case 'left':
+                            processedHeader = content.padEnd(col.width, padChar);
+                            break;
+                        case 'center':
+                            const paddingLength = col.width - content.length;
+                            const shorterPaddingLength = Math.floor(paddingLength / 2);
+                            const longerPaddingLength = paddingLength - shorterPaddingLength;
+                            const paddingLeft = padChar.repeat(longerPaddingLength);
+                            const paddingRight = padChar.repeat(shorterPaddingLength);
+                            processedHeader = paddingLeft + content + paddingRight;
+                            break;
+                        case 'right':
+                            processedHeader = content.padStart(col.width, padChar);
+                            break;
+                        default:
+                            processedHeader = content.padEnd(col.width, padChar);
+                    }
+                    processedHeader = bL + processedHeader + bR;
+                    if(col.headerStyle)
+                        processedHeader = col.headerStyle(processedHeader);
+                    //return bL + processedHeader + bR;
+                    return processedHeader;
+                })
+                .join('');
+            customConsole.log(header);
+        }
+    }
+
+    function printRow(columns, row){
+        let rowProcessed = '';
+        for(let colName in row){
+            const col = columns[colName];
+            let bL = (col?.borderLeft) ? col.borderLeft : '';
+            let bR = (col?.borderRight) ? col.borderRight : '';
+            if(col.borderStyle){
+                bL = col.borderStyle(bL);
+                bR = col.borderStyle(bR);
+            }
+            const padChar = (col?.paddingChar) ? col.paddingChar : ' ';
+            let currentCell = row[colName]?.padStart(col.width, padChar);
+            if(result._invalid && colName == 'nominativo')
+                currentCell = s.styleVoceAssente(currentCell);
+            rowProcessed += bL + currentCell + bR;
+        }
+        customConsole.log(rowProcessed);
+    }
+
+    if(isHeader){
+        printHeaders(columns, 1);
+    }else{
+        if (result === undefined)
+            return;
+        const oggi = propsToString(result.oggi, props);
+        const domani = propsToString(result.domani, props);
+        //const macrostato = ( result.macrostato === 'A' ) ? s.stileAssente(result.macrostato) : s.stilePresente(result.macrostato);
+        let macrostato;
+        switch(result.macrostato){
+            case('A'):
+                macrostato = s.stileAssente(result.macrostato);
+                break;
+            case('P'):
+                macrostato = s.stilePresente(result.macrostato);
+                break;
+            case('E'):
+            case('N'):
+                macrostato = s.stileEsente(result.macrostato);
+                break;
+            case('X'):
+                macrostato = s.stileX(result.macrostato);
+                break;
+            default:
+                macrostato = result.macrostato;
+        }
+        let descrizione = result.descrstato;
+        switch(descrizione){
+            case 'ASSENTE':
+                descrizione = s.stileAssente('ASSENT');
+                break;
+            case 'ASSENTE GIUSTIFICATO':
+                descrizione = s.stileAssente('ASS.GI');
+                break;
+            case 'ASSENTE NON GIUSTIFICATO':
+                descrizione = s.stileAssente('ASS.NG');
+                break;
+            case 'ASSENTE PREVISTO':
+                descrizione = s.stileAssente('ASS.PR');
+                break;
+            case 'ESENTE':
+                descrizione = s.stileEsente('ESENTE');
+                break;
+            case 'PRESENTE':
+                descrizione = s.stilePresente('PRESEN');
+                break;
+            default:
+                descrizione = descrizione.substring(0,5) + '.';
+        }
+
+        function formattaTelefono(numeroTelefono, separaUltimeTre = false) {
+            let baseFormattata;
+            let parteFinale = "";
+            numeroTelefono = numeroTelefono.replace(/\D/g, '');//numeroTelefono.trim();
+
+            //se Roma o Milano
+            if (numeroTelefono.startsWith('02') || numeroTelefono.startsWith('06'))
+                baseFormattata = numeroTelefono.substring(0, 2) + " " + numeroTelefono.substring(2);
+            else
+                if(numeroTelefono.startsWith('0871'))
+                    baseFormattata = numeroTelefono.substring(0, 4) + " " + numeroTelefono.substring(3);
+                else
+                    //pretende che tutti gli altri prefissi siano a 3 cifre (mi sento fortunato)
+                    baseFormattata = numeroTelefono.substring(0, 3) + " " + numeroTelefono.substring(3);
+
+            if (separaUltimeTre) {
+                const indiceSeparazione = baseFormattata.length - 3;
+                parteFinale = baseFormattata.substring(0, indiceSeparazione) + " " + baseFormattata.substring(indiceSeparazione);
+            } else
+                parteFinale = baseFormattata;
+
+            return parteFinale;
+        }
+
+        function formattaNominativo(result){
+            const cognome = s.stileNome(/*toTitleCase(*/result.cognome/*)*/);
+            const nome = s.stileCognome(toTitleCase(result.nome));
+            if(sortBy && sortBy == 'nome')
+                return nome + ' ' + cognome;
+            else
+                return cognome + ' ' + nome ;
+        }
+
+        function toTitleCase(str) {
+            return str.toLowerCase().split(' ').map(function(word) {
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            }).join(' ');
+        }
+
+        descrizione = descrizione.padEnd(columns.descrizione.width,columns.descrizione.paddingChar);
+        //const nominativo = result.nominativo.padEnd(columns.nominativo.width,columns.nominativo.paddingChar);
+        const nominativo = formattaNominativo(result) +  columns.nominativo.paddingChar.repeat(columns.nominativo.width-result.nominativo.length)
+        const telefono = result.telefono.padStart(columns.telefono.width,columns.telefono.paddingChar);
+        const id = result.id.toString().padStart(columns.id.width, columns.id.paddingChar);
+        const row = {
+            presente: macrostato,
+            descrizione: descrizione,
+            nominativo: nominativo,
+            oggi: oggi,
+            domani: domani,
+            telefono: s.stileTelefono( formattaTelefono(telefono, true).padStart(columns.telefono.width,columns.telefono.paddingChar) ),
+            id: s.stileId(id)
         };
 
         printRow(columns, row);
