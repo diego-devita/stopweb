@@ -167,7 +167,7 @@ export function validateArgs(command, options){
             'tutti': isBooleanTrueValue,
             'preferiti': isBooleanTrueValue,
             'delayms': (value) => { const n = parseInt(value); return ( isStringNumber(value) && n >= 100 ); },
-            'print': (value) => { return ['short1', 'short2', 'long', 'raw', 'json'].includes(value) },
+            'print': (value) => { return ['short1', 'short2', 'short3', 'long', 'raw', 'json'].includes(value) },
             'notot': isBooleanTrueValue,
             'gruppo': isStringNonEmpty,
             'presenti': (value) => { return [true, 'now', 'adesso', 'oggi', 'domani'].includes(value) },

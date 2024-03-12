@@ -69,7 +69,7 @@ const styles = {
 export async function commandRubrica({
     idsRequested = '-2',
     delayms = 1000,
-    printMode = 'short2',
+    printMode = 'short3',
     showTotal = true,
     group = {},
     filter,
