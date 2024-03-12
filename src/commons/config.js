@@ -186,6 +186,8 @@ class Config {
             //si segna i dati della configurazione caricata in this._config
             this._config = this.loaded.data;
 
+            this.loadStatoEventi();
+
             Config.instance = this;
         }
         return Config.instance;
@@ -728,6 +730,72 @@ class Config {
     }
 
     // #endregion
+
+    // #region event related
+
+    loadStatoEventi(){
+        try{
+            const statoEventiJSON = this.getContent('eventi', 'stato_eventi');
+            this.statoEventi = JSON.parse(statoEventiJSON);
+        }catch(e)
+        {
+            this.statoEventi = { preferiti: {} };
+        }
+    }
+
+    saveStatoEventi(){
+        const statoEventiJSON = JSON.stringify(this.statoEventi, null, 2);
+        this.setContent('eventi', 'stato_eventi', statoEventiJSON, false);
+    }
+
+    appendEvento(event){
+        //serializza su una riga
+        const eventJSON = JSON.stringify(event);
+        this.setContent('eventi', 'eventi', eventJSON, true);
+    }
+
+    readEventi(){
+        try{
+            const eventiContent = this.getContent('eventi', 'eventi');
+            const eventi = eventiContent
+                            .split('\n')
+                            .map( eventoJSON => JSON.parse(eventoJSON) );
+            return eventi;
+        }
+        catch(e){
+            return [];
+        }
+    }
+
+    updateStatoEventiPreferiti({ idDipendente, macrostato, nominativo }){
+        const chiave = 'id_' + idDipendente;
+
+        if( this.statoEventi.preferiti[chiave] ){
+            const dip = this.statoEventi.preferiti[chiave];
+            if(macrostato !== dip.macrostato){
+                dip.macrostato = macrostato;
+                this.eventoPreferitiCambioStato({ idDipendente, nominativo, macrostato });
+            }
+        }else{
+            this.statoEventi.preferiti[chiave] = { idDipendente, nominativo, macrostato };
+            this.eventoPreferitiNuovoDipendente({ idDipendente, nominativo, macrostato });
+        }
+    }
+
+    eventoPreferitiNuovoDipendente({ idDipendente, nominativo, macrostato }){
+        const timestamp = new Date().toISOString();
+        const event = { evento: 'PreferitiNuovo', timestamp, payload: { idDipendente, nominativo, macrostato } };
+        this.appendEvento(event);
+    }
+
+    eventoPreferitiCambioStato({ idDipendente, nominativo, macrostato }){
+        const timestamp = new Date().toISOString();
+        const event = { evento: 'PreferitiCambioStato', timestamp, payload: { idDipendente, nominativo, macrostato } };
+        this.appendEvento(event);
+    }
+
+    // #endregion
+
 }
 
 const nome = 'stopweb';
