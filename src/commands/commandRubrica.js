@@ -52,12 +52,19 @@ export async function commandRubrica({
     printMode = 'short2',
     showTotal = true,
     group = {},
-    filter
+    filter,
+    sortBy
 } = {}){
 
-    const validModes = ['short1','short2', 'long', 'raw', 'json'];
+    const validModes = ['short1','short2', 'short3', 'long', 'raw', 'json'];
     if (!validModes.includes(printMode))
         throw new Error(`printMode: ${printMode} non valido! Le opzioni valide sono: ${validModes.join(', ')}`);
+
+    if (sortBy && !['stato','descrizione','nome','cognome','id'].includes(sortBy))
+        throw new Error(`l\'argomento sortBy non può avere il valore ${sortBy} per un gruppo`);
+
+    if(sortBy === 'stato')  sortBy = 'macrostato';
+    if(sortBy === 'descrizione')  sortBy = 'descrstato';
 
     const cookieHeader = config.getCookieHeader();
 
@@ -129,7 +136,7 @@ export async function commandRubrica({
                     acc['id_' + obj.id.toString()] = obj;
                     return acc;
                 }, {});
-                const countersGruppo = printGroup(group, rubricaById, printHeader, printDipendente);
+                const countersGruppo = printGroup(group, rubricaById, printHeader, printDipendente, undefined, undefined, undefined, sortBy);
 
                 if(showTotal){
                     console.log(`\n[Risultati: ${countRisultati}][Mappa: ${styles.gruppi.styleMapped(countersGruppo.found)}/${styles.gruppi.styleMissing(countersGruppo.notFound)}]`);
@@ -138,6 +145,8 @@ export async function commandRubrica({
             else{
                 if(printHeader && i == 1)
                    printHeader();
+                if(sortBy)
+                   rubrica = sortByProperty(rubrica, sortBy);
                 rubrica.forEach(result => printDipendente({ result }));
             }
 
@@ -162,6 +171,18 @@ function filterRubricaPresentiDomani(rubrica){
     return rubrica.filter(dip => !dip.domani || (dip.domani.misstrasf === false && dip.domani.telelavoro === false && dip.domani.altro === false));
 }
 
+function sortByProperty(array, propertyName) {
+    return array.sort((a, b) => {
+        if (a[propertyName] < b[propertyName]) {
+            return -1;
+        }
+        if (a[propertyName] > b[propertyName]) {
+            return 1;
+        }
+        return 0;
+    });
+}
+
 function printGroup(
     group,
     rubricaById,
@@ -169,7 +190,8 @@ function printGroup(
     printDipendente,
     indent = 1,
     customConsole = console,
-    counters = { found: 0, notFound: 0 }
+    counters = { found: 0, notFound: 0 },
+    sortBy
 ){
 
     const indentSpaces = 4;
@@ -194,29 +216,33 @@ function printGroup(
     if(group.ids.length > 0){
         if(printHeader)
             printHeader(customConsole);
-        group.ids
-            .map(id => {
-                if ( Object.keys(rubricaById).includes('id_' + id.toString()) ){
-                    counters.found++;
-                    return rubricaById['id_' + id.toString()];
-                }else{
-                    counters.notFound++;
-                    return {
-                        _invalid: true,
-                        oggi: null,
-                        domani: null,
-                        macrostato: 'X',
-                        nominativo: 'VOCE ASSENTE!',
-                        id,
-                        descrstato: 'VOCE ASSENTE!',
-                        cognome: '',
-                        nome: '',
-                        telefono: ''
-                    };
-                    //throw new Error('!!!!!' + id.toString())
-                }
-            })
-            .forEach(result => printDipendente({ result, customConsole }));
+        let gruppoRubrica =
+            group.ids
+                .map(id => {
+                    if ( Object.keys(rubricaById).includes('id_' + id.toString()) ){
+                        counters.found++;
+                        return rubricaById['id_' + id.toString()];
+                    }else{
+                        counters.notFound++;
+                        return {
+                            _invalid: true,
+                            oggi: null,
+                            domani: null,
+                            macrostato: 'X',
+                            nominativo: 'VOCE ASSENTE!',
+                            id,
+                            descrstato: 'VOCE ASSENTE!',
+                            cognome: '',
+                            nome: '',
+                            telefono: ''
+                        };
+                        //throw new Error('!!!!!' + id.toString())
+                    }
+                })
+                //.forEach(result => printDipendente({ result, customConsole }));
+        if(sortBy)
+            gruppoRubrica = sortByProperty(gruppoRubrica, sortBy);
+        gruppoRubrica.forEach(result => printDipendente({ result, customConsole }));
     }
 
     const nextCustomConsole = {
@@ -233,7 +259,7 @@ function printGroup(
     }
 
     if(group.groups)
-        group.groups.forEach( group => printGroup(group, rubricaById, printHeader, printDipendente, indent + 1, nextCustomConsole, counters) );
+        group.groups.forEach( group => printGroup(group, rubricaById, printHeader, printDipendente, indent + 1, nextCustomConsole, counters, sortBy) );
 
     return counters;
 }
