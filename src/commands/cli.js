@@ -42,7 +42,8 @@ import { commandClear } from './commandClear.js';
 import { commandLogin } from './commandLogin.js';
 import { commandElenco } from './commandElenco.js';
 import { commandRubrica } from './commandRubrica.js';
-import { printEventi } from './commandEventi.js';
+
+import { printCodaEventi } from './commandEventi.js';
 
 import { valutaDate } from '../commons/date.js';
 import { MissingLoginError, ExpiredLoginError } from '../commons/errors.js';
