@@ -480,6 +480,14 @@ class Config {
         const basedir = this.getPathByDomain({ domain });
         this.createPathIfDoesntExist(basedir);
         const file = path.join(basedir, name);
+
+        //in seguito (facendo /storia) è venuto fuori che name poteva essere un subpath
+        //per farla di corsa tanto vale creare il path qui se non esiste
+        const realParentDir = path.dirname(file);
+        if (!fs.existsSync(realParentDir)) {
+            fs.mkdirSync(realParentDir, { recursive: true });
+        }
+
         if(append)
             fs.appendFileSync(file, content, 'utf8');
         else
@@ -777,6 +785,84 @@ class Config {
         }
     }
 
+    // #region storia
+
+    readStoriaEventiDelGiorno(YYYYMMDD){
+        try{
+            const year = YYYYMMDD.substring(0, 4);
+            const month = YYYYMMDD.substring(4, 6);
+            const day = YYYYMMDD.substring(6, 8);
+            const path = `${year}/${month}/${day}`;
+            const storiaEventiContent = this.getContent('storia', path).trim();
+            const storiaEventiDelGiorno = JSON.parse(storiaEventiContent);
+            return storiaEventiDelGiorno;
+        }
+        catch(e){
+            return {};
+        }
+    }
+
+    writeStoriaEventiDelGiorno(YYYYMMDD, storiaEventi){
+        const year = YYYYMMDD.substring(0, 4);
+        const month = YYYYMMDD.substring(4, 6);
+        const day = YYYYMMDD.substring(6, 8);
+        const path = `${year}/${month}/${day}`;
+
+        const storiaEventiJSON = JSON.stringify(storiaEventi, null, 2);
+        this.setContent('storia', path, storiaEventiJSON, false);
+    }
+
+    appendToStoriaEventiDelGiorno(YYYYMMDD, storiaEventi){
+        const storiaEventiDelGiorno = this.readStoriaEventiDelGiorno(YYYYMMDD);
+        Object.keys(storiaEventi)
+            .forEach(idDipendente => {
+                if(!storiaEventiDelGiorno[idDipendente])
+                    storiaEventiDelGiorno[idDipendente] = [];
+                storiaEventiDelGiorno[idDipendente].push(...storiaEventi[idDipendente]);
+            })
+        this.writeStoriaEventiDelGiorno(YYYYMMDD, storiaEventiDelGiorno);
+    }
+
+    storicizza(eventi){
+        //const eventi = this.readEventi();
+
+        function groupEventsByDay(eventi){
+            const groupedByDay = eventi.reduce((groups, evento) => {
+                const date = evento.timestamp.split('T')[0];
+                if (!groups[date]) {
+                    groups[date] = [];
+                }
+                groups[date].push(evento);
+                return groups;
+            }, {});
+            return groupedByDay;
+        }
+
+        function groupEventsByDipendente(eventi){
+            const groupedByDipendente = eventi.reduce((groups, evento) => {
+                const idDip = evento.payload.idDipendente;
+                if (!groups[idDip]) {
+                    groups[idDip] = [];
+                }
+                groups[idDip].push(evento);
+                return groups;
+            }, {});
+            return groupedByDipendente;
+        }
+
+        const groupedByDay = groupEventsByDay(eventi);
+        const storiaByDay = {};
+        Object.keys(groupedByDay)
+            .forEach( day => {
+                const eventsByDay = groupedByDay[day];
+                storiaByDay[day] = groupEventsByDipendente(eventsByDay);
+            });
+
+        return storiaByDay;
+    }
+
+    // #endregion
+
     updateStatoEventiPreferiti({ idDipendente, nominativo, macrostato, oggi, domani }){
 
         function serializzaGiustificativo(diGiornata){
@@ -855,6 +941,8 @@ class Config {
         }
     }
 
+    // #region eventi
+
     //si scatena quando un nuovo dipendente è stato aggiunto a this.statoEventi.preferiti
     eventoPreferiti_NuovoDipendente({ idDipendente, nominativo, macrostato, oggi, domani }){
         const timestamp = new Date().toISOString();
@@ -896,6 +984,8 @@ class Config {
         const event = { evento: 'Pref_CambioGiust_Domani-DomaniDiOggi', timestamp, payload: { idDipendente, nominativo, precedente, attuale } };
         this.appendEvento(event);
     }
+
+    // #endregion
 
     // #endregion
 
