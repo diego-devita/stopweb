@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 
 import yaml from 'js-yaml';
 
-import { getNowTimestamp } from './date.js';
+import { getNowTimestamp, isDateToday, isDateYesterday } from './date.js';
 
 import { MissingLoginError } from '../commons/errors.js';
 
@@ -737,6 +737,12 @@ class Config {
         try{
             const statoEventiJSON = this.getContent('eventi', 'stato_eventi');
             this.statoEventi = JSON.parse(statoEventiJSON);
+            if(this.statoEventi.timestamp)
+                this.statoEventi.timestamp = new Date(this.statoEventi.timestamp);
+            Object.values(this.statoEventi.preferiti).forEach(dip => {
+                dip.timestamp = new Date(dip.timestamp);
+            });
+            this.statoEventi.changed = false;
         }catch(e)
         {
             this.statoEventi = { preferiti: {} };
@@ -744,22 +750,26 @@ class Config {
     }
 
     saveStatoEventi(){
-        const statoEventiJSON = JSON.stringify(this.statoEventi, null, 2);
-        this.setContent('eventi', 'stato_eventi', statoEventiJSON, false);
+        if(this.statoEventi.changed){
+            this.statoEventi.timestamp = new Date();
+            const statoEventiJSON = JSON.stringify(this.statoEventi, null, 2);
+            this.setContent('eventi', 'stato_eventi', statoEventiJSON, false);
+        }
     }
 
     appendEvento(event){
         //serializza su una riga
-        const eventJSON = JSON.stringify(event);
+        const eventJSON = JSON.stringify(event) + '\n';
         this.setContent('eventi', 'eventi', eventJSON, true);
     }
 
     readEventi(){
         try{
-            const eventiContent = this.getContent('eventi', 'eventi');
-            const eventi = eventiContent
-                            .split('\n')
-                            .map( eventoJSON => JSON.parse(eventoJSON) );
+            const eventiContent = this.getContent('eventi', 'eventi').trim();
+            const eventi =
+                eventiContent
+                    .split('\n')
+                    .map( eventoJSON => JSON.parse(eventoJSON) );
             return eventi;
         }
         catch(e){
@@ -767,30 +777,123 @@ class Config {
         }
     }
 
-    updateStatoEventiPreferiti({ idDipendente, macrostato, nominativo }){
+    updateStatoEventiPreferiti({ idDipendente, nominativo, macrostato, oggi, domani }){
+
+        function serializzaGiustificativo(diGiornata){
+            if(!diGiornata)
+                return 'NULL';
+            //c'è la possibilità che io stia trascurando gli undefined che mi pare mi siano capitati
+            const telelavoro = (diGiornata.telelavoro === true) ? 'TL:1;' : 'TL:0;';
+            const misstrasf = (diGiornata.misstrasf === true) ? 'MT:1;' : 'MT:0;';
+            const altro = (diGiornata.altro === true) ? 'AL:1;' : 'AL:0;';
+            return `${telelavoro}${misstrasf}${altro}`;
+        }
+
         const chiave = 'id_' + idDipendente;
 
+        const oggiS = serializzaGiustificativo(oggi);
+        const domaniS = serializzaGiustificativo(domani);
+
+        //se il dipendente dell'evento esiste in statoEventi.preferiti
         if( this.statoEventi.preferiti[chiave] ){
+            //recupera il dipendente corrispondente
             const dip = this.statoEventi.preferiti[chiave];
-            if(macrostato !== dip.macrostato){
-                dip.macrostato = macrostato;
-                this.eventoPreferitiCambioStato({ idDipendente, nominativo, macrostato });
+
+            //se l'ultima volta che è stato aggiornato era ieri
+            if( isDateYesterday(dip.timestamp) ){
+                //allora valuta se il giustificativo [oggi] (preso oggi) sia diverso da [domani] preso ieri
+                if(dip.domani !== oggiS){
+                    this.eventoPreferiti_CambioGiustificativoOggiRispettoADomaniDiIeri({ idDipendente, nominativo, precedente: yesterdayDomaniS, attuale: oggiS });
+                }
+                dip.timestamp = new Date();
+                dip.oggi = oggiS;
+                dip.domani = domaniS;
+                this.statoEventi.changed = true;
             }
-        }else{
-            this.statoEventi.preferiti[chiave] = { idDipendente, nominativo, macrostato };
-            this.eventoPreferitiNuovoDipendente({ idDipendente, nominativo, macrostato });
+            //se invece l'ultima volta che è stato aggiornato era già oggi
+            else if( isDateToday(dip.timestamp) ){
+                //allora valuta se il giustificativo [oggi] (preso oggi) sia diverso da [oggi] preso oggi
+                if(dip.oggi !== oggiS){
+                    this.eventoPreferiti_CambioGiustificativoOggiRispettoAOggiDiOggi({ idDipendente, nominativo, precedente: dip.oggi, attuale: oggiS });
+                    dip.timestamp = new Date();
+                    dip.oggi = oggiS;
+                    this.statoEventi.changed = true;
+                }
+                //e valuta se il giustificativo [domani] (preso oggi) sia diverso da [domani] preso oggi
+                if(dip.domani !== domaniS){
+                    this.eventoPreferiti_CambioGiustificativoDomaniRispettoADomaniDiOggi({ idDipendente, nominativo, precedente: dip.domani, attuale: domaniS });
+                    dip.timestamp = new Date();
+                    dip.domani = domaniS;
+                    this.statoEventi.changed = true;
+                }
+                //e valuta se è cambiato il macrostato
+                if(macrostato !== dip.macrostato){
+                    //scatena evento PreferitiCambioStato
+                    this.eventoPreferiti_CambioStato({ idDipendente, nominativo, precedente: dip.macrostato, attuale: macrostato});
+                    dip.timestamp = new Date();
+                    dip.macrostato = macrostato;
+                    this.statoEventi.changed = true;
+                 }
+            }
+            //altrimenti se l'ultimo stato registrato appartiene ad una data precedente
+            else{
+                dip.timestamp = new Date();
+                dip.oggi = oggiS;
+                dip.domani = domaniS;
+                dip.macrostato = macrostato;
+                this.statoEventi.changed = true;
+                this.eventoPreferiti_Reset({ idDipendente, nominativo, macrostato, oggi: oggiS, domani: domaniS });
+            }
+        }
+        //se ancora non esisteva affatto
+        else{
+            //aggiunge il dipendente da capo in statoEventi.preferiti
+            this.statoEventi.preferiti[chiave] = { idDipendente, nominativo, macrostato, oggi: oggiS, domani: domaniS, timestamp: new Date() };
+            this.statoEventi.changed = true;
+            //scatena evento PreferitiNuovoDipendente
+            this.eventoPreferiti_NuovoDipendente({ idDipendente, nominativo, macrostato, oggi: oggiS, domani: domaniS });
         }
     }
 
-    eventoPreferitiNuovoDipendente({ idDipendente, nominativo, macrostato }){
+    //si scatena quando un nuovo dipendente è stato aggiunto a this.statoEventi.preferiti
+    eventoPreferiti_NuovoDipendente({ idDipendente, nominativo, macrostato, oggi, domani }){
         const timestamp = new Date().toISOString();
-        const event = { evento: 'PreferitiNuovo', timestamp, payload: { idDipendente, nominativo, macrostato } };
+        const event = { evento: 'Pref_Nuovo', timestamp, payload: { idDipendente, nominativo, macrostato, oggi, domani } };
         this.appendEvento(event);
     }
 
-    eventoPreferitiCambioStato({ idDipendente, nominativo, macrostato }){
+    //si scatena quando un dipendente aveva lo stato salvato a prima di oggi, e oggi il suo stato è stato resettato
+    eventoPreferiti_Reset({ idDipendente, nominativo, macrostato, oggi, domani }){
         const timestamp = new Date().toISOString();
-        const event = { evento: 'PreferitiCambioStato', timestamp, payload: { idDipendente, nominativo, macrostato } };
+        const event = { evento: 'Pref_Reset', timestamp, payload: { idDipendente, nominativo, macrostato, oggi, domani } };
+        this.appendEvento(event);
+    }
+
+    //si scatena quando un dipendente, oggi per oggi, ha cambiato stato presenza
+    eventoPreferiti_CambioStato({ idDipendente, nominativo, precedente, attuale }){
+        const timestamp = new Date().toISOString();
+        const event = { evento: 'Pref_CambioStato', timestamp, payload: { idDipendente, nominativo, precedente, attuale } };
+        this.appendEvento(event);
+    }
+
+    //si scatenza quando un dipendente, oggi ha il giustificativo di oggi diverso rispetto a quello di domani preso ieri
+    eventoPreferiti_CambioGiustificativoOggiRispettoADomaniDiIeri({ idDipendente, nominativo, precedente, attuale}){
+        const timestamp = new Date().toISOString();
+        const event = { evento: 'Pref_CambioGiust_Oggi-DomaniDiIeri', timestamp, payload: { idDipendente, nominativo, precedente, attuale } };
+        this.appendEvento(event);
+    }
+
+    //si scatena quando un dipendente, oggi ha il giustificativo di oggi diverso rispetto allo stesso preso sempre oggi in precedenza
+    eventoPreferiti_CambioGiustificativoOggiRispettoAOggiDiOggi({ idDipendente, nominativo, precedente, attuale}){
+        const timestamp = new Date().toISOString();
+        const event = { evento: 'Pref_CambioGiust_Oggi-OggiDiOggi', timestamp, payload: { idDipendente, nominativo, precedente, attuale } };
+        this.appendEvento(event);
+    }
+
+    //si scatena qunado un dipendente, oggi ha il giustificativo di domani diverso rispetto allo stesso preso sempre oggi in precedenza
+    eventoPreferiti_CambioGiustificativoDomaniRispettoADomaniDiOggi({ idDipendente, nominativo, precedente, attuale}){
+        const timestamp = new Date().toISOString();
+        const event = { evento: 'Pref_CambioGiust_Domani-DomaniDiOggi', timestamp, payload: { idDipendente, nominativo, precedente, attuale } };
         this.appendEvento(event);
     }
 

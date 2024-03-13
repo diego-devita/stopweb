@@ -1,6 +1,10 @@
 export function getNowTimestamp(){
     const now = new Date();
-    return `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+    return formatTimestamp(now);
+}
+
+export function formatTimestamp(date){
+    return `${date.getDate().toString().padStart(2,'0')}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}:${date.getSeconds().toString().padStart(2,'0')}`;
 }
 
 export function minutiFormatter(minuti){
@@ -351,4 +355,20 @@ export function getTodayDateAsYYYYMMDD(){
 
 export function isYYYYMMDDToday(YYYYMMDD){
     return getTodayDateAsYYYYMMDD() === YYYYMMDD;
+}
+
+export function isDateToday(date) {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+}
+
+export function isDateYesterday(date) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    return date.getDate() === yesterday.getDate() &&
+           date.getMonth() === yesterday.getMonth() &&
+           date.getFullYear() === yesterday.getFullYear();
 }
