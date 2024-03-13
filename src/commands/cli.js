@@ -1,8 +1,15 @@
 #!/usr/bin/env node
 
-import { parseCommandLineArgs, validateArgs } from './parseCommandLineArgs.js';
+import {
+    parseCommandLineArgs,
+    validateArgs
+} from './parseCommandLineArgs.js';
 
-import { commandHelp, commandVersione, commandGuida } from './commandHelp.js';
+import {
+    commandHelp,
+    commandVersione,
+    commandGuida } from './commandHelp.js';
+
 import {
     commandShowInfo,
     commandShowYamlProblems,
@@ -13,12 +20,16 @@ import {
     commandCheckUrls,
     commandListaProfili
 } from './commandShowInfo.js';
-import { commandClear } from './commandClear.js';
-import { commandLogin } from './commandLogin.js';
-import { commandFetch, commandFetchOriginalJson} from './commandFetch.js';
-import { commandElenco } from './commandElenco.js';
-import { commandRubrica } from './commandRubrica.js';
-import { commandInit, commandManifesto } from './commandInit.js';
+
+import {
+    commandFetch,
+    commandFetchOriginalJson
+} from './commandFetch.js';
+
+import {
+    commandInit,
+    commandManifesto
+} from './commandInit.js';
 
 import {
     commandGetPreferitiDipendenti,
@@ -27,13 +38,19 @@ import {
     commandGetOrari
 } from './commandPreferiti.js';
 
+import { commandClear } from './commandClear.js';
+import { commandLogin } from './commandLogin.js';
+import { commandElenco } from './commandElenco.js';
+import { commandRubrica } from './commandRubrica.js';
+import { printEventi } from './commandEventi.js';
+
 import { valutaDate } from '../commons/date.js';
+import { MissingLoginError, ExpiredLoginError } from '../commons/errors.js';
 
 import readlineSync from 'readline-sync';
 import chalk from 'chalk';
 
 import configurationSingleton from '../commons/config.js'
-import { MissingLoginError, ExpiredLoginError } from '../commons/errors.js';
 
 const config = configurationSingleton.getInstance();
 
@@ -338,6 +355,9 @@ switch (args.command) {
         }else{
             commandManifesto();
         }
+        break;
+    case 'eventi':
+        printEventi();
         break;
     default:
         console.log("Comando non riconosciuto:", args.command);

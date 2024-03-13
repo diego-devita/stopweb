@@ -197,6 +197,8 @@ export function validateArgs(command, options){
         'eula': {
             'stacce': isBooleanTrueValue,
             'accetta': isBooleanTrueValue,
+        },
+        'eventi':{
         }
     }
 

@@ -72,6 +72,7 @@ function stampaComandi(comandi, options = { maxCol, padding: 1, spacer: '     ' 
     stampaComando(comandi.elenco, buffer);
     stampaComando(comandi.preferiti, buffer);
     stampaComando(comandi.rubrica, buffer);
+    stampaComando(comandi.eventi, buffer);
 
     /*
     for(let comando of Object.values(comandi)){
@@ -388,6 +389,13 @@ export async function commandHelp({ showSintesi = true, comando, grid } = {}){
         'manifesto' : {
             nome: 'manifesto',
             descrizione: 'Mostra le condizioni di utilizzo accettate' + '\n' + ' '.padStart(12) + '(sinonimi: condizioni|maniavanti|eula)'
+        },
+        'eventi' : {
+            nome: 'eventi',
+            descrizione: 'Mostra la lista di tutti gli eventi registrati',
+            esempi: [
+                { uso: 'eventi', descrizione: 'Mostra la lista di tutti gli eventi registrati (dal comando rubrica)' },
+            ]
         }
     };
 
