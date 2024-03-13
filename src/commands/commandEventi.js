@@ -96,3 +96,23 @@ export function printCodaEventi(){
     printEventi(eventi);
 }
 
+export function printStoriaEventiDelGiorno(YYYYMMDD){
+    const eventiByDipendente = config.readStoriaEventiDelGiorno(YYYYMMDD);
+    Object.keys(eventiByDipendente)
+        .forEach(idDipendente => {
+            console.log('-'.repeat(130));
+            printEventi(eventiByDipendente[idDipendente]);
+        })
+}
+
+export function storicizzaCodaEventi(){
+    const eventi = config.readEventi();
+    const eventiByDay = config.storicizza(eventi);
+    Object.keys(eventiByDay)
+        .forEach(day => {
+            const storiaEventiDelGiorno = eventiByDay[day];
+            const YYYYMMDD = day.replace(/-/g, '');
+            config.appendToStoriaEventiDelGiorno(YYYYMMDD, storiaEventiDelGiorno)
+        });
+    //svuota lista eventi
+}
