@@ -101,6 +101,7 @@ export async function commandRubrica({
         if(++i > 1)
             await sleep(delayms);
         let rubrica = await fetchRubrica({ cookieHeader, idDipendente: id });
+        rubrica.forEach(dipendenteRubrica => processDataForEvents(dipendenteRubrica));
 
         switch(filter){
             case 'presentiAdesso':
@@ -179,6 +180,16 @@ export async function commandRubrica({
             }
         }
     }
+}
+
+function processDataForEvents(dipendenteRubrica){
+    config.updateStatoEventiPreferiti({
+        idDipendente: dipendenteRubrica.id,
+        nominativo: dipendenteRubrica.nominativo,
+        macrostato: dipendenteRubrica.macrostato,
+        oggi: dipendenteRubrica.oggi,
+        domani: dipendenteRubrica.domani,
+    });
 }
 
 function filterRubricaPresentiAdesso(rubrica){

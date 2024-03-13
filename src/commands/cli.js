@@ -340,6 +340,8 @@ switch (args.command) {
                 console.log('');
                 console.timeEnd('Tempo speso');
             }
+
+            config.saveStatoEventi();
         }
         catch(e){
             handleError(e);
