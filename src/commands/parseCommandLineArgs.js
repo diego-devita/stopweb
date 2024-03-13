@@ -111,7 +111,7 @@ export function validateArgs(command, options){
         },
         'help': {
             //'cols': (value) => { return ( isStringNumber(value) && parseInt(value) >= 74 ); },
-            'dettagli': (value) => { return ( ['help','clear','login','fetch','profilo','elenco','rubrica','preferiti'].includes(value) || isBooleanTrueValue(value) ); },
+            'dettagli': (value) => { return ( ['help','clear','login','fetch','profilo','elenco','rubrica','preferiti', 'eventi'].includes(value) || isBooleanTrueValue(value) ); },
             'versione': isBooleanTrueValue,
             'asgrid': isBooleanTrueValue,
         },
@@ -199,6 +199,8 @@ export function validateArgs(command, options){
             'accetta': isBooleanTrueValue,
         },
         'eventi':{
+            'storicizza': isBooleanTrueValue,
+            'storia': isStringDateAsYYYYMMDD,
         }
     }
 

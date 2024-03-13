@@ -43,7 +43,11 @@ import { commandLogin } from './commandLogin.js';
 import { commandElenco } from './commandElenco.js';
 import { commandRubrica } from './commandRubrica.js';
 
-import { printCodaEventi } from './commandEventi.js';
+import {
+    printCodaEventi,
+    storicizzaCodaEventi,
+    printStoriaEventiDelGiorno
+} from './commandEventi.js';
 
 import { valutaDate } from '../commons/date.js';
 import { MissingLoginError, ExpiredLoginError } from '../commons/errors.js';
@@ -360,7 +364,16 @@ switch (args.command) {
         }
         break;
     case 'eventi':
-        printEventi();
+        if(args.options.storicizza){
+            storicizzaCodaEventi();
+        }
+        else if(args.options.storia){
+            const YYYYMMDD = args.options.storia;
+            printStoriaEventiDelGiorno(YYYYMMDD);
+        }
+        else{
+            printCodaEventi();
+        }
         break;
     default:
         console.log("Comando non riconosciuto:", args.command);

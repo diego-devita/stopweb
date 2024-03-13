@@ -394,7 +394,9 @@ export async function commandHelp({ showSintesi = true, comando, grid } = {}){
             nome: 'eventi',
             descrizione: 'Mostra la lista di tutti gli eventi registrati',
             esempi: [
-                { uso: 'eventi', descrizione: 'Mostra la lista di tutti gli eventi registrati (dal comando rubrica)' },
+                { uso: 'eventi', descrizione: 'Mostra la coda eventi (prodotta dal comando rubrica)' },
+                { uso: 'eventi --storicizza', descrizione: 'Svuota coda eventi che sposta su storia del risp. giorno (raggr. per dipend.)' },
+                { uso: 'eventi --storia [YYYYMMDD]', descrizione: 'Mostra la storia eventi del giorno specificato' },
             ]
         }
     };
