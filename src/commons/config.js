@@ -5,7 +5,13 @@ import { fileURLToPath } from 'url';
 
 import yaml from 'js-yaml';
 
-import { getNowTimestamp, isDateToday, isDateYesterday } from './date.js';
+import {
+    getNowTimestamp,
+    isDateToday,
+    isDateYesterday,
+    getTodayDateAsYYYYMMDD,
+    isYYYYMMDDToday
+} from './date.js';
 
 import { MissingLoginError } from '../commons/errors.js';
 
@@ -753,7 +759,7 @@ class Config {
             this.statoEventi.changed = false;
         }catch(e)
         {
-            this.statoEventi = { preferiti: {} };
+            this.statoEventi = { preferiti: {}, timbrature: {} };
         }
     }
 
@@ -889,7 +895,7 @@ class Config {
             if( isDateYesterday(dip.timestamp) ){
                 //allora valuta se il giustificativo [oggi] (preso oggi) sia diverso da [domani] preso ieri
                 if(dip.domani !== oggiS){
-                    this.eventoPreferiti_CambioGiustificativoOggiRispettoADomaniDiIeri({ idDipendente, nominativo, precedente: yesterdayDomaniS, attuale: oggiS });
+                    this.eventoPreferiti_CambioGiustificativoOggiRispettoADomaniDiIeri({ idDipendente, nominativo, precedente: dip.domani, attuale: oggiS });
                 }
                 dip.timestamp = new Date();
                 dip.oggi = oggiS;
@@ -941,7 +947,38 @@ class Config {
         }
     }
 
+    updateStatoEventiTimbrature({ giorno, timbrature }){
+        if(giorno === this.statoEventi.timbrature?.timestamp){
+            const prima = this.statoEventi.timbrature?.payload;
+            if (prima !== timbrature){
+                this.eventoTimbrature_CambioTimbrature({ giorno: giorno, prima, dopo: timbrature });
+                this.statoEventi.timbrature.payload = timbrature;
+                this.statoEventi.changed = true;
+            }
+        }
+        else{
+            this.eventoTimbrature_NuovoGiorno({ giorno, timbrature });
+            this.statoEventi.timbrature.timestamp = giorno;
+            this.statoEventi.timbrature.payload = timbrature;
+            this.statoEventi.changed = true;
+        }
+    }
+
     // #region eventi
+
+    //si scatena quando lo stato è stato aggiornato in un giorno nuovo rispetto all'ultimo registrato
+    eventoTimbrature_NuovoGiorno({ giorno, timbrature }){
+        const timestamp = new Date().toISOString();
+        const event = { evento: 'Timbr_NuovoGiorno', timestamp, payload: { giorno, timbrature } };
+        this.appendEvento(event);
+    }
+
+    //si scatena quando le timbrature del giorno sono cambiate
+    eventoTimbrature_CambioTimbrature({ giorno, prima, dopo }){
+        const timestamp = new Date().toISOString();
+        const event = { evento: 'Timbr_Cambio', timestamp, payload: { giorno, prima, dopo } };
+        this.appendEvento(event);
+    }
 
     //si scatena quando un nuovo dipendente è stato aggiunto a this.statoEventi.preferiti
     eventoPreferiti_NuovoDipendente({ idDipendente, nominativo, macrostato, oggi, domani }){
