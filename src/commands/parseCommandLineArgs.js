@@ -171,6 +171,8 @@ export function validateArgs(command, options){
             'notot': isBooleanTrueValue,
             'gruppo': isStringNonEmpty,
             'presenti': (value) => { return [true, 'now', 'adesso', 'oggi', 'domani'].includes(value) },
+            'tel': isStringNumber,
+            'nominativo': (value) => { return value.match(/^[a-zA-Z]+$/g); },
             'noTimeSpent': isBooleanTrueValue,
             'sortby': (value) => { return ['nome', 'cognome', 'id', 'stato', 'descrizione'].includes(value) },
         },

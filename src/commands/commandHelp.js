@@ -363,6 +363,8 @@ export async function commandHelp({ showSintesi = true, comando, grid } = {}){
                 { uso: 'rubrica --ids [0-9]+(,[0-9]+)*', descrizione: 'Mostra le entry rubrica dei dipendenti specificati' },
                 { uso: 'rubrica --ids [..valori] --delayms 100', descrizione: 'Fa un\'attesa di 100ms tra una richiesta e l\'altra (default: 1000)' },
                 { uso: 'rubrica [..opz] --presenti [now|adesso|oggi|domani]', descrizione: 'Mostra i risultati filtrati con i criteri scelti'},
+                { uso: 'rubrica [..opz] --tel ([\\d]+)', descrizione: 'Mostra i risultati filtrati col telefono che inizia per'},
+                { uso: 'rubrica [..opz] --nominativo ([a-zA-Z]+)', descrizione: 'Mostra i risultati filtrati col nominativo che include'},
                 { uso: 'rubrica [..opz] --notot', descrizione: 'Non mostra il count dei risultati'},
                 { uso: 'rubrica [..opz] --noTimeSpent', descrizione: 'Non mostra il tempo richiesto per la response' },
                 { uso: 'rubrica [..opz] --gruppo [nomegruppo]', descrizione: 'Mostra i risultati raggruppati come da [nomegruppo] corrispondente'},

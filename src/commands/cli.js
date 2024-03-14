@@ -312,21 +312,30 @@ switch (args.command) {
                 }
             }
 
-            let filter = undefined;
+            let filters = [];
+
+            if(args.options.tel){
+                filters.push('tel:' + args.options.tel);
+            }
+
+            if(args.options.nominativo){
+                filters.push('nominativo:' + args.options.nominativo);
+            }
+
             if(args.options.presenti){
                 switch(args.options.presenti){
                     case 'adesso':
                     case 'now':
-                        filter = 'presentiAdesso';
+                        filters.push('presentiAdesso');
                         break;
                     case 'oggi':
-                        filter = 'presentiOggi';
+                        filters.push('presentiOggi');
                         break;
                     case 'domani':
-                        filter = 'presentiDomani';
+                        filters.push('presentiDomani');
                         break;
                     default:
-                        filter = 'presentiAdesso';
+                        filters.push('presentiAdesso');
                 }
             }
 
@@ -337,7 +346,7 @@ switch (args.command) {
                     printMode: args.options?.print,
                     showTotal: showRubricaTotal,
                     group,
-                    filter,
+                    filters,
                     sortBy: args.options.sortby
                 });
 
