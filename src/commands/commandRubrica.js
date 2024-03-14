@@ -72,7 +72,7 @@ export async function commandRubrica({
     printMode = 'short3',
     showTotal = true,
     group = {},
-    filter,
+    filters = [],
     sortBy
 } = {}){
 
@@ -103,20 +103,28 @@ export async function commandRubrica({
         let rubrica = await fetchRubrica({ cookieHeader, idDipendente: id });
         //rubrica.forEach(dipendenteRubrica => processDataForEvents(dipendenteRubrica));
 
-        switch(filter){
-            case 'presentiAdesso':
-                rubrica = filterRubricaPresentiAdesso(rubrica);
-                break;
-            case 'presentiOggi':
-                rubrica = filterRubricaPresentiOggi(rubrica);
-                break;
-            case 'presentiDomani':
-                rubrica = filterRubricaPresentiDomani(rubrica);
-                break;
-            default:
-                if (filter !== '' && filter !== undefined)
-                    throw new Error('L\'argomento filter può avere come valori possibili solo presentiOggi, presentiDomani o stringa vuota o undefined');
-        }
+        filters
+            .forEach(filter => {
+                if(/^tel:\d+$/.test(filter))
+                    rubrica = filterRubricaTelefono(rubrica, filter);
+                else if(/^nominativo:[a-zA-Z]+$/.test(filter))
+                    rubrica = filterRubricaNominativo(rubrica, filter)
+                else
+                    switch(filter){
+                        case 'presentiAdesso':
+                            rubrica = filterRubricaPresentiAdesso(rubrica);
+                            break;
+                        case 'presentiOggi':
+                            rubrica = filterRubricaPresentiOggi(rubrica);
+                            break;
+                        case 'presentiDomani':
+                            rubrica = filterRubricaPresentiDomani(rubrica);
+                            break;
+                        default:
+                            if (filter !== '' && filter !== undefined)
+                                throw new Error('L\'argomento filter può avere come valori possibili solo tel:[\d]+, nominativo:[a-zA-Z]+, presentiOggi, presentiDomani o stringa vuota o undefined');
+                    }
+            });
 
         countRisultati += rubrica.length;
 
@@ -206,6 +214,16 @@ function filterRubricaPresentiOggi(rubrica){
 
 function filterRubricaPresentiDomani(rubrica){
     return rubrica.filter(dip => !dip.domani || (dip.domani.misstrasf === false && dip.domani.telelavoro === false && dip.domani.altro === false));
+}
+
+function filterRubricaTelefono(rubrica, filter){
+    const telToStartWith = filter.match(/\d+/g).join('');
+    return rubrica.filter( dip => dip.telefono.replace(/\D/g, '').startsWith(telToStartWith) );
+}
+
+function filterRubricaNominativo(rubrica, filter){
+    const nominativoContains = /^nominativo:(.+)$/g.exec(filter)[1];
+    return rubrica.filter( dip => dip.nominativo.toLowerCase().includes(nominativoContains.toLowerCase()) );
 }
 
 function sortByProperty(array, propertyName) {
