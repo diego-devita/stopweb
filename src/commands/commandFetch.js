@@ -12,7 +12,7 @@ const config = configurationSingleton.getInstance();
 /**
  * Recupera e restituisce le Giornate nell'intervallo specificato
  */
-async function fetchGiornate({
+export async function fetchGiornate({
     dataInizio,
     dataFine,
     noCache = false,

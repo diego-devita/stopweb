@@ -1,6 +1,9 @@
 import configurationSingleton from '../commons/config.js'
 import chalk from 'chalk';
-import { formatTimestamp } from '../commons/date.js';
+import { formatTimestamp, getTodayDateAsYYYYMMDD } from '../commons/date.js';
+
+import { fetchGiornate } from './commandFetch.js';
+import { fetchRubrica } from '../presenze/rubrica.js';
 
 const config = configurationSingleton.getInstance();
 
@@ -125,4 +128,109 @@ export function storicizzaCodaEventi(){
             config.appendToStoriaEventiDelGiorno(YYYYMMDD, storiaEventiDelGiorno)
         });
     //svuota lista eventi
+}
+
+export async function listen({
+    //default 10 min
+    delayInSeconds = 600,
+    //random range default tra -3m e +6m
+    randomOffsetRange = [-180, 360]
+} = {}){
+
+    const cookieHeader = config.getCookieHeader();
+
+    function processRubricaDataForEvents(dipendenteRubrica){
+        config.updateStatoEventiPreferiti({
+            idDipendente: dipendenteRubrica.id,
+            nominativo: dipendenteRubrica.nominativo,
+            macrostato: dipendenteRubrica.macrostato,
+            oggi: dipendenteRubrica.oggi,
+            domani: dipendenteRubrica.domani,
+        });
+    }
+
+    function processGiornataDataForEvents(today, giornate){
+        const giornata = giornate[today];
+        const timbrature =
+            giornata.aspettativa.uscita.hhmm + ' [' + giornata.timbrature.map( t => t.versoU1 + t.hhmm).join(' ') + ']';
+        config.updateStatoEventiTimbrature({ giorno: today, timbrature });
+    }
+
+    function getRandomOffset(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    //console.log('-'.repeat(45));
+    console.log(style.dim('-'.repeat(45)));
+    console.log(style.chiave(`[stopweb v.`) + style.dim(config.version) + style.chiave(']') + ' - Ascolto degli eventi');
+    console.log(style.dim('-'.repeat(45)));
+    console.log(style.dim(` delaySeconds: ${delayInSeconds}`));
+    console.log(style.dim(` randomOffsetRange: ${randomOffsetRange}`));
+    console.log('-'.repeat(45)+'\n');
+
+    let interrogazioni = 0;
+    while (true) {
+
+        //recupera le voci rubrica dei preferiti
+        //e le processa per aggiornare lo stato interno che ne scova le differenze e farà scatenare eventuali eventi
+        process.stdout.write(`Sto interrogando la rubrica preferiti...`);
+        let rubrica = await fetchRubrica({ cookieHeader, idDipendente: -2 });
+        rubrica.forEach(dipendenteRubrica => processRubricaDataForEvents(dipendenteRubrica));
+        process.stdout.write(style.true(`OK`));
+        console.log();
+
+        //come sopra per recuperare la giornata di oggi e scovare eventuali differenze
+        process.stdout.write(`Sto interrogando le timbrature...`);
+        const today = getTodayDateAsYYYYMMDD();
+        const giornate = await fetchGiornate({ dataInizio: today, dataFine: today, noCache: true, fetchTodayAlways: true });
+        processGiornataDataForEvents(today, giornate);
+        process.stdout.write(style.true(`OK`));
+        console.log();
+
+        //salva lo stato solo se hanno finito entrambi i giri (rubrica e giornate)
+        config.saveStatoEventi();
+
+        interrogazioni += 1;
+        console.log(`Lo stato è stato aggiornato!`);
+
+        const eventi = config.readEventi();
+
+        async function countdown(delayInSeconds) {
+            for (let i = delayInSeconds; i >= 0; i--) {
+
+                const spacer = ' '.repeat(40);
+
+                if (i < delayInSeconds) {
+                    process.stdout.write("\x1b[1A\x1b[2K");
+                    process.stdout.write("\x1b[1A\x1b[2K");
+                }
+
+                console.log(`Tentativi svolti: ${interrogazioni} - Eventi in coda: ${eventi.length}`);
+                console.log(`Prossimo tentativo: ${i} second(i) rimasti`);
+
+                //Attende 1 secondo
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            //resetta la linea alla fine dei giochi di rewrite
+            process.stdout.write("\x1b[1A\x1b[2K");
+            process.stdout.write("\x1b[1A\x1b[2K");
+            process.stdout.write("\x1b[1A\x1b[2K");
+            process.stdout.write("\x1b[1A\x1b[2K");
+            process.stdout.write("\x1b[1A\x1b[2K");
+        }
+
+        function getRandomOffset(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        //applica strategie di camuffamento per il gusto di
+        const offsetInSeconds = getRandomOffset(...randomOffsetRange);
+        let nextDelayInSeconds = delayInSeconds + offsetInSeconds;
+        //30 sec minimo di sicurezza
+        nextDelayInSeconds = Math.max(30, nextDelayInSeconds);
+
+        //aspetta
+        await countdown(nextDelayInSeconds);
+    }
+
 }
