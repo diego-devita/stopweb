@@ -46,7 +46,8 @@ import { commandRubrica } from './commandRubrica.js';
 import {
     printCodaEventi,
     storicizzaCodaEventi,
-    printStoriaEventiDelGiorno
+    printStoriaEventiDelGiorno,
+    listen
 } from './commandEventi.js';
 
 import { valutaDate } from '../commons/date.js';
@@ -345,8 +346,6 @@ switch (args.command) {
                 console.log('');
                 console.timeEnd('Tempo speso');
             }
-
-            config.saveStatoEventi();
         }
         catch(e){
             handleError(e);
@@ -370,6 +369,10 @@ switch (args.command) {
         else if(args.options.storia){
             const YYYYMMDD = args.options.storia;
             printStoriaEventiDelGiorno(YYYYMMDD);
+        }
+        else if(args.options.listen){
+            //await listen({delayInSeconds: 10,randomOffsetRange: [0,0]});
+            await listen({ delayInSeconds: args.options.delay, randomOffsetRange: args.options.offset });
         }
         else{
             printCodaEventi();

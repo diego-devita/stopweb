@@ -201,6 +201,9 @@ export function validateArgs(command, options){
         'eventi':{
             'storicizza': isBooleanTrueValue,
             'storia': isStringDateAsYYYYMMDD,
+            'listen': isBooleanTrueValue,
+            'delay': isStringNumber,
+            'offset':  (value) => { return /^[-+]?[0-9]+,[-+]?[0-9]+$/.test(value); },
         }
     }
 
