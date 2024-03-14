@@ -347,7 +347,8 @@ switch (args.command) {
                     showTotal: showRubricaTotal,
                     group,
                     filters,
-                    sortBy: args.options.sortby
+                    sortBy: args.options.sortby,
+                    noIndent:  (args.options.noindent === true)
                 });
 
             //mostra il tempo speso solo se l'opzione print non è 'json' e se non è stata usata l'opzione noTimeSpent

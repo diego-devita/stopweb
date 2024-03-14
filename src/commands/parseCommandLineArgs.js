@@ -175,6 +175,7 @@ export function validateArgs(command, options){
             'nominativo': (value) => { return value.match(/^[a-zA-Z]+$/g); },
             'noTimeSpent': isBooleanTrueValue,
             'sortby': (value) => { return ['nome', 'cognome', 'id', 'stato', 'descrizione'].includes(value) },
+            'noindent': isBooleanTrueValue,
         },
         'preferiti': {
             'list': isBooleanTrueValue,

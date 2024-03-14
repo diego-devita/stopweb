@@ -371,6 +371,7 @@ export async function commandHelp({ showSintesi = true, comando, grid } = {}){
                 { uso: 'rubrica [..opz] --print [short1|short2|short3|long]', descrizione: 'Mostra i risultati con la modalità scelta che per default è short3' },
                 { uso: 'rubrica [..opz] --print json', descrizione: 'Mostra il json originale (usare senza opzioni a monte per: no filter)' },
                 { uso: 'rubrica [..opz] --sortby [nome|cognome|id|stato|descrizione]', descrizione: 'Decide ordine elenco (anche gruppi). In short3, nome/cognome seguono.'},
+                { uso: 'rubrica --gruppo [nome] --noindent', descrizione: 'Comanda che i gruppi figlio non siano indentati rispetto al parent.'},
             ]
         },
         'preferiti' : {

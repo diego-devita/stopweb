@@ -73,7 +73,8 @@ export async function commandRubrica({
     showTotal = true,
     group = {},
     filters = [],
-    sortBy
+    sortBy,
+    noIndent = true
 } = {}){
 
     const validModes = ['short1','short2', 'short3', 'long', 'raw', 'json'];
@@ -169,7 +170,18 @@ export async function commandRubrica({
                     acc['id_' + obj.id.toString()] = obj;
                     return acc;
                 }, {});
-                const countersGruppo = printGroup(group, rubricaById, printHeader, printDipendente, undefined, undefined, undefined, sortBy);
+
+                let indentSize = undefined;
+                if (noIndent === true)
+                    indentSize = 0;
+                const countersGruppo = printGroup({
+                    group,
+                    rubricaById,
+                    printHeader,
+                    printDipendente,
+                    sortBy,
+                    indentSize
+                });
 
                 if(showTotal){
                     console.log(`\n[Risultati: ${countRisultati}][Mappa: ${styles.gruppi.styleMapped(countersGruppo.found)}/${styles.gruppi.styleMissing(countersGruppo.notFound)}]`);
@@ -238,18 +250,19 @@ function sortByProperty(array, propertyName) {
     });
 }
 
-function printGroup(
+function printGroup({
     group,
     rubricaById,
     printHeader,
     printDipendente,
     indent = 1,
+    indentSize = 4,
     customConsole = console,
     counters = { found: 0, notFound: 0 },
     sortBy
-){
+}){
 
-    const indentSpaces = 4;
+    const indentSpaces = indentSize;
     const leftPadding = ' '.repeat(indent*indentSpaces);
 
     const s = styles.gruppi;
@@ -314,7 +327,20 @@ function printGroup(
     }
 
     if(group.groups)
-        group.groups.forEach( group => printGroup(group, rubricaById, printHeader, printDipendente, indent + 1, nextCustomConsole, counters, sortBy) );
+        group.groups
+            .forEach( group =>
+                printGroup({
+                    group,
+                    rubricaById,
+                    printHeader,
+                    printDipendente,
+                    indent: indent + 1,
+                    indentSize,
+                    customConsole: nextCustomConsole,
+                    counters,
+                    sortBy
+                })
+            );
 
     return counters;
 }
