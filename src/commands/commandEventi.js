@@ -23,6 +23,8 @@ style.nominativo = chalk.dim;
 style.presente = chalk.greenBright.bold;
 style.assente = chalk.redBright.bold;
 
+style.dim = chalk.dim;
+
 function printEventi(eventi){
 
     eventi.forEach(evento => {
@@ -34,9 +36,11 @@ function printEventi(eventi){
         const eventName = style.eventName(evento.evento.padEnd(40, '-'));
 
         const header = `${style.timestamp(timestampFormatted)} ${eventName}`;
-
-        const id = payload.idDipendente.toString().padEnd(4,' ');
-        const nominativo = style.nominativo (payload.nominativo.padEnd(30, '-'));
+        let id, nominativo;
+        if(evento.evento.startsWith('Pref_')){
+            id = payload.idDipendente.toString().padEnd(4,' ');
+            nominativo = style.nominativo (payload.nominativo.padEnd(30, '-'));
+        }
 
         function formatStatoPresenza(stato){
             return (stato == 'P') ? style.presente.bold(stato) : style.assente.bold(stato);
@@ -70,6 +74,12 @@ function printEventi(eventi){
         }
 
         switch(evento.evento){
+            case 'Timbr_NuovoGiorno':
+                console.log(`${header} ${payload.giorno} ${payload.timbrature}`);
+                break;
+            case 'Timbr_Cambio':
+                console.log(`${header} ${payload.giorno} ${payload.dopo}`);
+                break;
             case 'Pref_Nuovo':
             case 'Pref_Reset':
                 const macrostato = formatStatoPresenza(payload.macrostato);
