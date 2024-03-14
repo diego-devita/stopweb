@@ -5,9 +5,13 @@ import { formatTimestamp, getTodayDateAsYYYYMMDD } from '../commons/date.js';
 import { fetchGiornate } from './commandFetch.js';
 import { fetchRubrica } from '../presenze/rubrica.js';
 
+import readline from 'readline';
+
 const config = configurationSingleton.getInstance();
 
 const style = {};
+
+style.success = chalk.green.bold;
 
 style.oggi = chalk.blueBright;
 style.domani = chalk.blueBright;
@@ -27,6 +31,7 @@ style.presente = chalk.greenBright.bold;
 style.assente = chalk.redBright.bold;
 
 style.dim = chalk.dim;
+style.stress = chalk.yellow;
 
 function printEventi(eventi){
 
@@ -161,26 +166,28 @@ export async function listen({
     }
 
     //console.log('-'.repeat(45));
-    console.log(style.dim('-'.repeat(45)));
-    console.log(style.chiave(`[stopweb v.`) + style.dim(config.version) + style.chiave(']') + ' - Ascolto degli eventi');
-    console.log(style.dim('-'.repeat(45)));
+    console.log(style.dim('-'.repeat(78)));
+    console.log(style.stress(` [stopweb v.`) + style.dim(config.version) + style.stress(']') + style.dim(' - Ascolto degli eventi'));
+    console.log(style.dim('-'.repeat(78)));
     console.log(style.dim(` delaySeconds: ${delayInSeconds}`));
     console.log(style.dim(` randomOffsetRange: ${randomOffsetRange}`));
-    console.log('-'.repeat(45)+'\n');
+    console.log(style.dim('-'.repeat(78))+'\n');
 
     let interrogazioni = 0;
+    let prevEventiCount = 0;
+
     while (true) {
 
         //recupera le voci rubrica dei preferiti
         //e le processa per aggiornare lo stato interno che ne scova le differenze e farà scatenare eventuali eventi
-        process.stdout.write(`Sto interrogando la rubrica preferiti...`);
+        process.stdout.write(` Sto interrogando la rubrica preferiti...`);
         let rubrica = await fetchRubrica({ cookieHeader, idDipendente: -2 });
         rubrica.forEach(dipendenteRubrica => processRubricaDataForEvents(dipendenteRubrica));
         process.stdout.write(style.true(`OK`));
         console.log();
 
         //come sopra per recuperare la giornata di oggi e scovare eventuali differenze
-        process.stdout.write(`Sto interrogando le timbrature...`);
+        process.stdout.write(` Sto interrogando le timbrature...`);
         const today = getTodayDateAsYYYYMMDD();
         const giornate = await fetchGiornate({ dataInizio: today, dataFine: today, noCache: true, fetchTodayAlways: true });
         processGiornataDataForEvents(today, giornate);
@@ -191,22 +198,44 @@ export async function listen({
         config.saveStatoEventi();
 
         interrogazioni += 1;
-        console.log(`Lo stato è stato aggiornato!`);
+        console.log(style.success(` Lo stato è stato aggiornato!`));
 
         const eventi = config.readEventi();
 
         async function countdown(delayInSeconds) {
-            for (let i = delayInSeconds; i >= 0; i--) {
 
-                const spacer = ' '.repeat(40);
+            // Attiva la modalità raw per process.stdin
+            readline.emitKeypressEvents(process.stdin);
+            process.stdin.setRawMode(true);
+
+            let isRunning = true;
+
+            process.stdin.on('keypress', (str, key) => {
+                // Esce dall'applicazione se viene premuto Ctrl+C
+                if (key.ctrl && key.name === 'c') {
+                    process.exit();
+                }
+                // altrimenti segnala isRunning false
+                else {
+                    isRunning = false;
+                }
+            });
+
+            for (let i = delayInSeconds; i >= 0 && isRunning; i--) {
 
                 if (i < delayInSeconds) {
                     process.stdout.write("\x1b[1A\x1b[2K");
                     process.stdout.write("\x1b[1A\x1b[2K");
+                    process.stdout.write("\x1b[1A\x1b[2K");
                 }
 
-                console.log(`Tentativi svolti: ${interrogazioni} - Eventi in coda: ${eventi.length}`);
-                console.log(`Prossimo tentativo: ${i} second(i) rimasti`);
+                let diffEventiLabel = '';
+                if(interrogazioni > 1)
+                    diffEventiLabel = ` (+${(eventi.length - prevEventiCount)})`;
+
+                console.log(` Tentativi svolti: ${style.stress(interrogazioni)} - Eventi in coda: ${style.stress(eventi.length)}${diffEventiLabel}`);
+                console.log(` Prossimo tentativo: ${style.stress(i)} second(i) rimasti`);
+                console.log(style.dim(` (Premere un tasto per saltare l'attesa o CTRL-C per interrompere)`));
 
                 //Attende 1 secondo
                 await new Promise(resolve => setTimeout(resolve, 1000));
@@ -217,10 +246,13 @@ export async function listen({
             process.stdout.write("\x1b[1A\x1b[2K");
             process.stdout.write("\x1b[1A\x1b[2K");
             process.stdout.write("\x1b[1A\x1b[2K");
+            process.stdout.write("\x1b[1A\x1b[2K");
+
+            process.stdin.setRawMode(false); // Disattiva la modalità raw quando hai finito
         }
 
         function getRandomOffset(min, max) {
-            return Math.random() * (max - min) + min;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
         //applica strategie di camuffamento per il gusto di
@@ -231,6 +263,8 @@ export async function listen({
 
         //aspetta
         await countdown(nextDelayInSeconds);
+
+        prevEventiCount = eventi.length;
     }
 
 }
