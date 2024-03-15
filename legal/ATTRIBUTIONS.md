@@ -32,6 +32,15 @@ Dipendenze Dirette
 *   **Repository**: [https://github.com/microsoft/playwright](https://github.com/microsoft/playwright)
 *   **Attribuzione Supplementare**: Questo prodotto utilizza Playwright per automatizzare interazioni con browser web, inclusa l'automazione di Chromium. Chromium è un progetto open-source rilasciato sotto varie licenze di software open source, principalmente la licenza BSD.
 
+### Express.js
+
+- **Sito Web**: [https://expressjs.com/](https://expressjs.com/)
+- **Versione Utilizzata**: 4.18.3
+- **Licenza**: MIT
+- **Copyright**: Copyright (c) 2024 TJ Holowaychuk <tj@vision-media.ca>
+
+La licenza completa può essere trovata nel repository GitHub di Express o nel seguente link: [https://github.com/expressjs/express/blob/master/LICENSE](https://github.com/expressjs/express/blob/master/LICENSE)
+
 Dipendenze Indirette (con menzione speciale)
 --------------------------------------------
 
