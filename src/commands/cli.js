@@ -47,7 +47,8 @@ import {
     printCodaEventi,
     storicizzaCodaEventi,
     printStoriaEventiDelGiorno,
-    listen
+    listen,
+    startApiServer
 } from './commandEventi.js';
 
 import { valutaDate } from '../commons/date.js';
@@ -212,7 +213,7 @@ switch (args.command) {
             await commandInitConfig();
         else if(args.options.cambia)
             await commandCambiaProfilo(args.options.cambia);
-            else if(args.options.crea)
+        else if(args.options.crea)
             await commandCreaProfilo(args.options.crea);
         else if(args.options.seturls)
             await commandSetUrls(args.options.seturls);
@@ -382,7 +383,14 @@ switch (args.command) {
         }
         else if(args.options.listen){
             //await listen({delayInSeconds: 10,randomOffsetRange: [0,0]});
-            await listen({ delayInSeconds: args.options.delay, randomOffsetRange: args.options.offset });
+            await listen({
+                delayInSeconds: args.options.delay,
+                randomOffsetRange: args.options.offset,
+                serveApi: args.options.serveApi === true
+            });
+        }
+        else if( args.options.serveApiOnly === true ){
+            startApiServer();
         }
         else{
             printCodaEventi();

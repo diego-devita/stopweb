@@ -123,6 +123,7 @@ export async function commandFetchOriginalJson({dataInizio, dataFine}={}){
     const json = await fetchGiornateCartellinoRAW(idDipendente, cookieHeader, dataInizio, dataFine);
 
     console.log(JSON.stringify(json, null, 2));
+    return json;
 }
 
 /**

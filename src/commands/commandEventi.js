@@ -7,6 +7,9 @@ import { fetchRubrica } from '../presenze/rubrica.js';
 
 import readline from 'readline';
 
+import express from 'express';
+import { commandFetchOriginalJson } from './commandFetch.js';
+
 const config = configurationSingleton.getInstance();
 
 const style = {};
@@ -135,14 +138,43 @@ export function storicizzaCodaEventi(){
     //svuota lista eventi
 }
 
+export function startApiServer({ port = 3000 }={}){
+
+    const idDipendente = config.getIdDipendente();
+    const cookieHeader = config.getCookieHeader();
+
+    const app = express();
+    app.use(express.json());
+
+    app.get('/api/timbrature/:dataInizio/:dataFine', async (req, res) => {
+        const { dataInizio, dataFine } = req.params;
+        const json = await fetchGiornateCartellinoRAW(idDipendente, cookieHeader, dataInizio, dataFine);
+        res.json( json );
+    });
+
+    app.get('/api/preferiti', async (req, res) => {
+        const { dataInizio, dataFine } = req.params;
+        const json = await fetchRubrica({ cookieHeader, idDipendente: -2 });
+        res.json( json );
+    });
+
+    // Avvio del server
+    app.listen(port, () => {});
+}
+
 export async function listen({
     //default 10 min
     delayInSeconds = 600,
     //random range default tra -3m e +6m
-    randomOffsetRange = [-180, 360]
+    randomOffsetRange = [-180, 360],
+    serveApi = true,
+    port = 3000
 } = {}){
 
     const cookieHeader = config.getCookieHeader();
+
+    if(serveApi)
+        startApiServer();
 
     function processRubricaDataForEvents(dipendenteRubrica){
         config.updateStatoEventiPreferiti({
@@ -171,6 +203,13 @@ export async function listen({
     console.log(style.dim('-'.repeat(78)));
     console.log(style.dim(` delaySeconds: ${delayInSeconds}`));
     console.log(style.dim(` randomOffsetRange: ${randomOffsetRange}`));
+    console.log(style.dim('-'.repeat(78)));
+    let labelServer = '';
+    if(!serveApi)
+        labelServer = style.false.dim(' [Api Server non attivo]');
+    else
+        labelServer = style.true.dim(` [Api Server attivo su: http://localhost:${port}]\n`) + ' /api/timbrature/dataInizioYYYYMMDD/dataFineYYYYMMDD\n /api/preferiti';
+    console.log(labelServer);
     console.log(style.dim('-'.repeat(78))+'\n');
 
     let interrogazioni = 0;

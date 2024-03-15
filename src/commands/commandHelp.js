@@ -370,8 +370,8 @@ export async function commandHelp({ showSintesi = true, comando, grid } = {}){
                 { uso: 'rubrica [..opz] --gruppo [nomegruppo]', descrizione: 'Mostra i risultati raggruppati come da [nomegruppo] corrispondente'},
                 { uso: 'rubrica [..opz] --print [short1|short2|short3|long]', descrizione: 'Mostra i risultati con la modalità scelta che per default è short3' },
                 { uso: 'rubrica [..opz] --print json', descrizione: 'Mostra il json originale (usare senza opzioni a monte per: no filter)' },
-                { uso: 'rubrica [..opz] --sortby [nome|cognome|id|stato|descrizione]', descrizione: 'Decide ordine elenco (anche gruppi). In short3, nome/cognome seguono.'},
-                { uso: 'rubrica --gruppo [nome] --noindent', descrizione: 'Comanda che i gruppi figlio non siano indentati rispetto al parent.'},
+                { uso: 'rubrica [..opz] --sortby [nome|cognome|id|stato|descrizione]', descrizione: 'Decide ordine elenco (anche gruppi). In short3, nome/cognome seguono'},
+                { uso: 'rubrica --gruppo [nome] --noindent', descrizione: 'Comanda che i gruppi figlio non siano indentati rispetto al parent'},
             ]
         },
         'preferiti' : {
@@ -395,14 +395,16 @@ export async function commandHelp({ showSintesi = true, comando, grid } = {}){
         },
         'eventi' : {
             nome: 'eventi',
-            descrizione: 'Mostra la lista di tutti gli eventi registrati',
+            descrizione: 'Mostra il contenuto della coda eventi',
             esempi: [
-                { uso: 'eventi', descrizione: 'Mostra la coda eventi (prodotta dal comando rubrica)' },
+                { uso: 'eventi', descrizione: 'Mostra la coda eventi (prodotta dal comando eventi --listen)' },
                 { uso: 'eventi --storicizza', descrizione: 'Svuota coda eventi che sposta su storia del risp. giorno (raggr. per dipend.)' },
                 { uso: 'eventi --storia [YYYYMMDD]', descrizione: 'Mostra la storia eventi del giorno specificato' },
-                { uso: 'eventi --listen', descrizione: 'Lancia loop interrog. di rubrica a presenze oggi e aggiurna lo stato' },
+                { uso: 'eventi --listen', descrizione: 'Polling su presenze e aggiurna lo stato per far scatenare gli eventi' },
                 { uso: 'eventi --listen --delay [sec]', descrizione: 'Decide quanto tempo aspettare tra un interrog. e l\'altra (default: 600)' },
                 { uso: 'eventi --listen --offset [da,a]', descrizione: 'Decide intervallo da-a (in sec) offset random da aggiungere (default: -180, 360)' },
+                { uso: 'eventi --listen --serveApi', descrizione: 'Lancia anche il server web per servire le api' },
+                { uso: 'eventi --listen --serveApiOnly', descrizione: 'Lancia SOLO il server web per servire le api' },
             ]
         }
     };
