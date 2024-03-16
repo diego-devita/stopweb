@@ -12,7 +12,7 @@ import fs from 'fs';
 const url_cartellino = config.get('cartellino.url');
 
 //attiva la risposta fasulla
-const MOCK_API = true;
+const MOCK_API = config.mock;
 //costruisce una risposta fasulla copiandola
 const BUILD_MOCK = false;
 //percorso del file che conserva l'ultima risposta fasulla creata
@@ -43,7 +43,13 @@ export async function fetchGiornateCartellino(idDipendente, cookieHeader, dataIn
 
 //interroga l'api e restituisce il json originale ricevuto
 export async function fetchGiornateCartellinoRAW(idDipendente, cookieHeader, dataInizio, dataFine){
-    const originalData = await fetchCartellino(idDipendente, cookieHeader, dataInizio, dataFine);
+
+    let originalData;
+    if(MOCK_API)
+        originalData = { json: ()=>{ return JSON.parse( fs.readFileSync(MOCK_FILE, 'utf-8') ) }}
+    else
+        originalData = await fetchCartellino(idDipendente, cookieHeader, dataInizio, dataFine);
+
     return await originalData.json();
 }
 

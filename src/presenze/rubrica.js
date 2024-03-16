@@ -8,7 +8,7 @@ import { ExpiredLoginError } from '../commons/errors.js';
 const url_rubrica = config.get('rubrica.url');
 
 //attiva la risposta fasulla
-const MOCK_API = true;
+const MOCK_API = config.mock;
 //costruisce una risposta fasulla copiandola
 const BUILD_MOCK = false;
 //percorso del file che conserva l'ultima risposta fasulla creata
