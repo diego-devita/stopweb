@@ -16,10 +16,24 @@ import {
 import { MissingLoginError } from '../commons/errors.js';
 
 import { load, change } from './profile.js';
+import eventEmitterSingleton from '../commons/eventEmitter.js';
+
+const events = eventEmitterSingleton.getInstance();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
+/**
+ * @emits eventi.timbrature.nuovoGiorno
+ * @emits eventi.timbrature.variazione
+ * @emits eventi.preferiti.dipendente.nuovo
+ * @emits eventi.preferiti.dipendente.reset
+ * @emits eventi.preferiti.stato.variazione
+ * @emits eventi.preferiti.giustificativo.oggi.variazioneDaIeri
+ * @emits eventi.preferiti.giustificativo.oggi.variazioneDaOggi
+ * @emits eventi.preferiti.giustificativo.domani.variazioneDaOggi
+ */
 class Config {
 
     /**
@@ -534,6 +548,10 @@ class Config {
 
     // #region getter/setter ./auth/cookie
 
+    get cookieHeader(){
+        return this.getCookieHeader();
+    }
+
     setCookieHeader(cookieHeader) {
         this.setContent('auth', 'cookie', cookieHeader);
     }
@@ -549,6 +567,10 @@ class Config {
     // #endregion
 
     // #region getter/setter ./auth/id_dipendente
+
+    get idDipendente(){
+        return this.getIdDipendente();
+    }
 
     setIdDipendente(idDipendente){
         this.setContent('auth', 'id_dipendente', idDipendente);
@@ -966,11 +988,16 @@ class Config {
 
     // #region eventi
 
+    dispatchEvent({nome, event} = {}){
+        events.emit(nome, event);
+    }
+
     //si scatena quando lo stato è stato aggiornato in un giorno nuovo rispetto all'ultimo registrato
     eventoTimbrature_NuovoGiorno({ giorno, timbrature }){
         const timestamp = new Date().toISOString();
         const event = { evento: 'Timbr_NuovoGiorno', timestamp, payload: { giorno, timbrature } };
         this.appendEvento(event);
+        this.dispatchEvent({ nome: 'eventi.timbrature.nuovoGiorno', event });
     }
 
     //si scatena quando le timbrature del giorno sono cambiate
@@ -978,6 +1005,7 @@ class Config {
         const timestamp = new Date().toISOString();
         const event = { evento: 'Timbr_Cambio', timestamp, payload: { giorno, prima, dopo } };
         this.appendEvento(event);
+        this.dispatchEvent({ nome: 'eventi.timbrature.variazione', event });
     }
 
     //si scatena quando un nuovo dipendente è stato aggiunto a this.statoEventi.preferiti
@@ -985,6 +1013,7 @@ class Config {
         const timestamp = new Date().toISOString();
         const event = { evento: 'Pref_Nuovo', timestamp, payload: { idDipendente, nominativo, macrostato, oggi, domani } };
         this.appendEvento(event);
+        this.dispatchEvent({ nome: 'eventi.preferiti.dipendente.nuovo', event });
     }
 
     //si scatena quando un dipendente aveva lo stato salvato a prima di oggi, e oggi il suo stato è stato resettato
@@ -992,6 +1021,7 @@ class Config {
         const timestamp = new Date().toISOString();
         const event = { evento: 'Pref_Reset', timestamp, payload: { idDipendente, nominativo, macrostato, oggi, domani } };
         this.appendEvento(event);
+        this.dispatchEvent({ nome: 'eventi.preferiti.dipendente.reset', event });
     }
 
     //si scatena quando un dipendente, oggi per oggi, ha cambiato stato presenza
@@ -999,6 +1029,7 @@ class Config {
         const timestamp = new Date().toISOString();
         const event = { evento: 'Pref_CambioStato', timestamp, payload: { idDipendente, nominativo, precedente, attuale } };
         this.appendEvento(event);
+        this.dispatchEvent({ nome: 'eventi.preferiti.stato.variazione', event });
     }
 
     //si scatenza quando un dipendente, oggi ha il giustificativo di oggi diverso rispetto a quello di domani preso ieri
@@ -1006,6 +1037,7 @@ class Config {
         const timestamp = new Date().toISOString();
         const event = { evento: 'Pref_CambioGiust_Oggi-DomaniDiIeri', timestamp, payload: { idDipendente, nominativo, precedente, attuale } };
         this.appendEvento(event);
+        this.dispatchEvent({ nome: 'eventi.preferiti.giustificativo.oggi.variazioneDaIeri', event });
     }
 
     //si scatena quando un dipendente, oggi ha il giustificativo di oggi diverso rispetto allo stesso preso sempre oggi in precedenza
@@ -1013,6 +1045,7 @@ class Config {
         const timestamp = new Date().toISOString();
         const event = { evento: 'Pref_CambioGiust_Oggi-OggiDiOggi', timestamp, payload: { idDipendente, nominativo, precedente, attuale } };
         this.appendEvento(event);
+        this.dispatchEvent({ nome: 'eventi.preferiti.giustificativo.oggi.variazioneDaOggi', event });
     }
 
     //si scatena qunado un dipendente, oggi ha il giustificativo di domani diverso rispetto allo stesso preso sempre oggi in precedenza
@@ -1020,6 +1053,7 @@ class Config {
         const timestamp = new Date().toISOString();
         const event = { evento: 'Pref_CambioGiust_Domani-DomaniDiOggi', timestamp, payload: { idDipendente, nominativo, precedente, attuale } };
         this.appendEvento(event);
+        this.dispatchEvent({ nome: 'eventi.preferiti.giustificativo.domani.variazioneDaOggi', event });
     }
 
     // #endregion

@@ -1,4 +1,6 @@
 import configurationSingleton from '../commons/config.js'
+import eventEmitterSingleton from '../commons/eventEmitter.js';
+
 import chalk from 'chalk';
 import { formatTimestamp, getTodayDateAsYYYYMMDD } from '../commons/date.js';
 
@@ -7,14 +9,14 @@ import { fetchRubrica } from '../presenze/rubrica.js';
 
 import readline from 'readline';
 
-import express from 'express';
-import { commandFetchOriginalJson } from './commandFetch.js';
-
 const config = configurationSingleton.getInstance();
+
+let websocket;
 
 const style = {};
 
 style.success = chalk.green.bold;
+style.danger = chalk.red.bold;
 
 style.oggi = chalk.blueBright;
 style.domani = chalk.blueBright;
@@ -138,43 +140,64 @@ export function storicizzaCodaEventi(){
     //svuota lista eventi
 }
 
-export function startApiServer({ port = 3000 }={}){
-
-    const idDipendente = config.getIdDipendente();
-    const cookieHeader = config.getCookieHeader();
-
-    const app = express();
-    app.use(express.json());
-
-    app.get('/api/timbrature/:dataInizio/:dataFine', async (req, res) => {
-        const { dataInizio, dataFine } = req.params;
-        const json = await fetchGiornateCartellinoRAW(idDipendente, cookieHeader, dataInizio, dataFine);
-        res.json( json );
-    });
-
-    app.get('/api/preferiti', async (req, res) => {
-        const { dataInizio, dataFine } = req.params;
-        const json = await fetchRubrica({ cookieHeader, idDipendente: -2 });
-        res.json( json );
-    });
-
-    // Avvio del server
-    app.listen(port, () => {});
-}
-
 export async function listen({
     //default 10 min
     delayInSeconds = 600,
     //random range default tra -3m e +6m
     randomOffsetRange = [-180, 360],
-    serveApi = true,
-    port = 3000
 } = {}){
 
-    const cookieHeader = config.getCookieHeader();
+    function getRandomOffset(min, max) {
+        return Math.random() * (max - min) + min;
+    }
 
-    if(serveApi)
-        startApiServer();
+    //console.log('-'.repeat(45));
+    console.log(style.dim('-'.repeat(78)));
+    console.log(style.stress(` [stopweb v.`) + style.dim(config.version) + style.stress(']') + style.dim(' - Ascolto degli eventi'));
+    console.log(style.dim('-'.repeat(78)));
+    console.log(style.dim(` delaySeconds: ${delayInSeconds}`));
+    console.log(style.dim(` randomOffsetRange: ${randomOffsetRange}`));
+    console.log(style.dim('-'.repeat(78))+'\n');
+
+    let interrogazioni = 0;
+    let prevEventiCount = 0;
+
+    while (true) {
+
+        let noerror = true;
+        try{
+            await aggiornaStato();
+        }
+        catch(e){
+            noerror = false;
+            //se è scaduta la login, l'aggiornamento dello stato può accusare
+        }
+        interrogazioni += 1;
+        if(noerror)
+            console.log(style.success(` Lo stato è stato aggiornato!`));
+        else
+            console.log(style.danger(` Login scaduta!`));
+        const eventi = config.readEventi();
+
+        function getRandomOffset(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        //applica strategie di camuffamento per il gusto di
+        const offsetInSeconds = getRandomOffset(...randomOffsetRange);
+        let nextDelayInSeconds = delayInSeconds + offsetInSeconds;
+        //30 sec minimo di sicurezza
+        nextDelayInSeconds = Math.max(30, nextDelayInSeconds);
+
+        //aspetta col countdown
+        await countdown(nextDelayInSeconds, interrogazioni, eventi, prevEventiCount);
+
+        prevEventiCount = eventi.length;
+    }
+
+}
+
+async function aggiornaStato(){
 
     function processRubricaDataForEvents(dipendenteRubrica){
         config.updateStatoEventiPreferiti({
@@ -189,121 +212,75 @@ export async function listen({
     function processGiornataDataForEvents(today, giornate){
         const giornata = giornate[today];
         const timbrature =
-            giornata.aspettativa.uscita.hhmm + ' [' + giornata.timbrature.map( t => t.versoU1 + t.hhmm).join(' ') + ']';
+            giornata.aspettativa?.uscita?.hhmm + ' [' + giornata.timbrature.map( t => t.versoU1 + t.hhmm).join(' ') + ']';
         config.updateStatoEventiTimbrature({ giorno: today, timbrature });
     }
 
-    function getRandomOffset(min, max) {
-        return Math.random() * (max - min) + min;
-    }
+    //recupera le voci rubrica dei preferiti
+    //e le processa per aggiornare lo stato interno che ne scova le differenze e farà scatenare eventuali eventi
+    process.stdout.write(` Sto interrogando la rubrica preferiti...`);
+    let rubrica = await fetchRubrica({ cookieHeader: config.cookieHeader, idDipendente: -2 });
+    rubrica.forEach(dipendenteRubrica => processRubricaDataForEvents(dipendenteRubrica));
+    process.stdout.write(style.true(`OK`));
+    console.log();
 
-    //console.log('-'.repeat(45));
-    console.log(style.dim('-'.repeat(78)));
-    console.log(style.stress(` [stopweb v.`) + style.dim(config.version) + style.stress(']') + style.dim(' - Ascolto degli eventi'));
-    console.log(style.dim('-'.repeat(78)));
-    console.log(style.dim(` delaySeconds: ${delayInSeconds}`));
-    console.log(style.dim(` randomOffsetRange: ${randomOffsetRange}`));
-    console.log(style.dim('-'.repeat(78)));
-    let labelServer = '';
-    if(!serveApi)
-        labelServer = style.false.dim(' [Api Server non attivo]');
-    else
-        labelServer = style.true.dim(` [Api Server attivo su: http://localhost:${port}]\n`) + ' /api/timbrature/dataInizioYYYYMMDD/dataFineYYYYMMDD\n /api/preferiti';
-    console.log(labelServer);
-    console.log(style.dim('-'.repeat(78))+'\n');
+    //come sopra per recuperare la giornata di oggi e scovare eventuali differenze
+    process.stdout.write(` Sto interrogando le timbrature...`);
+    const today = getTodayDateAsYYYYMMDD();
+    const giornate = await fetchGiornate({ dataInizio: today, dataFine: today, noCache: true, fetchTodayAlways: true });
+    processGiornataDataForEvents(today, giornate);
+    process.stdout.write(style.true(`OK`));
+    console.log();
 
-    let interrogazioni = 0;
-    let prevEventiCount = 0;
+    //salva lo stato solo se hanno finito entrambi i giri (rubrica e giornate)
+    config.saveStatoEventi();
+}
 
-    while (true) {
+async function countdown(delayInSeconds, interrogazioni, eventi, prevEventiCount) {
 
-        //recupera le voci rubrica dei preferiti
-        //e le processa per aggiornare lo stato interno che ne scova le differenze e farà scatenare eventuali eventi
-        process.stdout.write(` Sto interrogando la rubrica preferiti...`);
-        let rubrica = await fetchRubrica({ cookieHeader, idDipendente: -2 });
-        rubrica.forEach(dipendenteRubrica => processRubricaDataForEvents(dipendenteRubrica));
-        process.stdout.write(style.true(`OK`));
-        console.log();
+    // Attiva la modalità raw per process.stdin
+    readline.emitKeypressEvents(process.stdin);
+    process.stdin.setRawMode(true);
 
-        //come sopra per recuperare la giornata di oggi e scovare eventuali differenze
-        process.stdout.write(` Sto interrogando le timbrature...`);
-        const today = getTodayDateAsYYYYMMDD();
-        const giornate = await fetchGiornate({ dataInizio: today, dataFine: today, noCache: true, fetchTodayAlways: true });
-        processGiornataDataForEvents(today, giornate);
-        process.stdout.write(style.true(`OK`));
-        console.log();
+    let isRunning = true;
 
-        //salva lo stato solo se hanno finito entrambi i giri (rubrica e giornate)
-        config.saveStatoEventi();
+    process.stdin.on('keypress', (str, key) => {
+        // Esce dall'applicazione se viene premuto Ctrl+C
+        if (key.ctrl && key.name === 'c') {
+            process.exit();
+        }
+        // altrimenti segnala isRunning false
+        else {
+            isRunning = false;
+        }
+    });
 
-        interrogazioni += 1;
-        console.log(style.success(` Lo stato è stato aggiornato!`));
+    for (let i = delayInSeconds; i >= 0 && isRunning; i--) {
 
-        const eventi = config.readEventi();
-
-        async function countdown(delayInSeconds) {
-
-            // Attiva la modalità raw per process.stdin
-            readline.emitKeypressEvents(process.stdin);
-            process.stdin.setRawMode(true);
-
-            let isRunning = true;
-
-            process.stdin.on('keypress', (str, key) => {
-                // Esce dall'applicazione se viene premuto Ctrl+C
-                if (key.ctrl && key.name === 'c') {
-                    process.exit();
-                }
-                // altrimenti segnala isRunning false
-                else {
-                    isRunning = false;
-                }
-            });
-
-            for (let i = delayInSeconds; i >= 0 && isRunning; i--) {
-
-                if (i < delayInSeconds) {
-                    process.stdout.write("\x1b[1A\x1b[2K");
-                    process.stdout.write("\x1b[1A\x1b[2K");
-                    process.stdout.write("\x1b[1A\x1b[2K");
-                }
-
-                let diffEventiLabel = '';
-                if(interrogazioni > 1)
-                    diffEventiLabel = ` (+${(eventi.length - prevEventiCount)})`;
-
-                console.log(` Tentativi svolti: ${style.stress(interrogazioni)} - Eventi in coda: ${style.stress(eventi.length)}${diffEventiLabel}`);
-                console.log(` Prossimo tentativo: ${style.stress(i)} second(i) rimasti`);
-                console.log(style.dim(` (Premere un tasto per saltare l'attesa o CTRL-C per interrompere)`));
-
-                //Attende 1 secondo
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-            //resetta la linea alla fine dei giochi di rewrite
+        if (i < delayInSeconds) {
             process.stdout.write("\x1b[1A\x1b[2K");
             process.stdout.write("\x1b[1A\x1b[2K");
             process.stdout.write("\x1b[1A\x1b[2K");
-            process.stdout.write("\x1b[1A\x1b[2K");
-            process.stdout.write("\x1b[1A\x1b[2K");
-            process.stdout.write("\x1b[1A\x1b[2K");
-
-            process.stdin.setRawMode(false); // Disattiva la modalità raw quando hai finito
         }
 
-        function getRandomOffset(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
+        let diffEventiLabel = '';
+        if(interrogazioni > 1)
+            diffEventiLabel = ` (+${(eventi.length - prevEventiCount)})`;
 
-        //applica strategie di camuffamento per il gusto di
-        const offsetInSeconds = getRandomOffset(...randomOffsetRange);
-        let nextDelayInSeconds = delayInSeconds + offsetInSeconds;
-        //30 sec minimo di sicurezza
-        nextDelayInSeconds = Math.max(30, nextDelayInSeconds);
+        console.log(` Tentativi svolti: ${style.stress(interrogazioni)} - Eventi in coda: ${style.stress(eventi.length)}${diffEventiLabel}`);
+        console.log(` Prossimo tentativo: ${style.stress(i)} second(i) rimasti`);
+        console.log(style.dim(` (Premere un tasto per saltare l'attesa o CTRL-C per interrompere)`));
 
-        //aspetta
-        await countdown(nextDelayInSeconds);
-
-        prevEventiCount = eventi.length;
+        //Attende 1 secondo
+        await new Promise(resolve => setTimeout(resolve, 1000));
     }
+    //resetta la linea alla fine dei giochi di rewrite
+    process.stdout.write("\x1b[1A\x1b[2K");
+    process.stdout.write("\x1b[1A\x1b[2K");
+    process.stdout.write("\x1b[1A\x1b[2K");
+    process.stdout.write("\x1b[1A\x1b[2K");
+    process.stdout.write("\x1b[1A\x1b[2K");
+    process.stdout.write("\x1b[1A\x1b[2K");
 
+    process.stdin.setRawMode(false); // Disattiva la modalità raw quando hai finito
 }
