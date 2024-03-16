@@ -7,15 +7,31 @@ import { transformGiornate } from './giornateTransformer.js';
 const events = eventEmitterSingleton.getInstance();
 const config = configurationSingleton.getInstance();
 
+import fs from 'fs';
+
 const url_cartellino = config.get('cartellino.url');
+
+//attiva la risposta fasulla
+const MOCK_API = true;
+//costruisce una risposta fasulla copiandola
+const BUILD_MOCK = false;
+//percorso del file che conserva l'ultima risposta fasulla creata
+const MOCK_FILE = config.getPathByDomain({domain: 'cache'}) + '/response-cartellino';
 
 //interroga l'api e restituisce le giornate trasformate
 export async function fetchGiornateCartellino(idDipendente, cookieHeader, dataInizio, dataFine){
-    const originalData = await fetchCartellino(idDipendente, cookieHeader, dataInizio, dataFine);
+
+    let originalData;
+    if(MOCK_API)
+        originalData = { json: ()=>{ return JSON.parse( fs.readFileSync(MOCK_FILE, 'utf-8') ) }}
+    else
+        originalData = await fetchCartellino(idDipendente, cookieHeader, dataInizio, dataFine);
 
     let jsonData;
     try{
         jsonData = await originalData.json();
+        if(BUILD_MOCK)
+            fs.writeFileSync(MOCK_FILE, JSON.stringify(jsonData, null, 2));
     }catch(e){
         //tecnicamente qui ha fallito a decodificare il json, ma se succede è perché la risposta era strampalata
         //ergo 99% è perché la login era scaduta
