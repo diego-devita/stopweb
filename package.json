@@ -21,7 +21,8 @@
     "playwright": "^1.41.2",
     "readline-sync": "^1.4.10",
     "string-width": "^7.1.0",
-    "strip-ansi": "^7.1.0"
+    "strip-ansi": "^7.1.0",
+    "ws": "^8.16.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
