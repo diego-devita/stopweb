@@ -47,8 +47,7 @@ import {
     printCodaEventi,
     storicizzaCodaEventi,
     printStoriaEventiDelGiorno,
-    listen,
-    startApiServer
+    listen
 } from './commandEventi.js';
 
 import { valutaDate } from '../commons/date.js';
@@ -58,6 +57,8 @@ import readlineSync from 'readline-sync';
 import chalk from 'chalk';
 
 import configurationSingleton from '../commons/config.js'
+
+import { startWebSocket, startApiServer } from './commandApi.js';
 
 const config = configurationSingleton.getInstance();
 
@@ -374,6 +375,16 @@ switch (args.command) {
         }
         break;
     case 'eventi':
+
+        function startApi({nows = false}={}){
+            console.log('------------------------------------------------------------------------------');
+            console.log(' visitare http://localhost:3000/stopweb/api/ per i dettagli');
+            console.log(' aprire una connessione con ws://localhost:3080/ per gli eventi');
+            if(!nows)
+                startWebSocket();
+            startApiServer();
+        }
+
         if(args.options.storicizza){
             storicizzaCodaEventi();
         }
@@ -383,14 +394,20 @@ switch (args.command) {
         }
         else if(args.options.listen){
             //await listen({delayInSeconds: 10,randomOffsetRange: [0,0]});
+
+            if(args.options.api){
+                startApi({nows: false});
+            }
+
             await listen({
                 delayInSeconds: args.options.delay,
                 randomOffsetRange: args.options.offset,
-                serveApi: args.options.serveApi === true
+                /*serveApi: args.options.serveApi === true*/
             });
+
         }
-        else if( args.options.serveApiOnly === true ){
-            startApiServer();
+        else if( args.options.apionly === true ){
+            startApi({nows: true});
         }
         else{
             printCodaEventi();

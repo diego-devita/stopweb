@@ -403,8 +403,8 @@ export async function commandHelp({ showSintesi = true, comando, grid } = {}){
                 { uso: 'eventi --listen', descrizione: 'Polling su presenze e aggiurna lo stato per far scatenare gli eventi' },
                 { uso: 'eventi --listen --delay [sec]', descrizione: 'Decide quanto tempo aspettare tra un interrog. e l\'altra (default: 600)' },
                 { uso: 'eventi --listen --offset [da,a]', descrizione: 'Decide intervallo da-a (in sec) offset random da aggiungere (default: -180, 360)' },
-                { uso: 'eventi --listen --serveApi', descrizione: 'Lancia anche il server web per servire le api' },
-                { uso: 'eventi --listen --serveApiOnly', descrizione: 'Lancia SOLO il server web per servire le api' },
+                { uso: 'eventi --listen --api', descrizione: 'Lancia anche il server web per servire le api e il socket per eventi' },
+                { uso: 'eventi --listen --apionly', descrizione: 'Lancia SOLO il server web per servire le api' },
             ]
         }
     };
