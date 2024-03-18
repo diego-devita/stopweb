@@ -8,6 +8,7 @@ import { fetchGiornate } from './commandFetch.js';
 import { fetchRubrica } from '../presenze/rubrica.js';
 
 import readline from 'readline';
+import fs from 'fs';
 
 const config = configurationSingleton.getInstance();
 
@@ -314,10 +315,15 @@ async function countdown(delayInSeconds, interrogazioni, failures, eventi, prevE
 
     for (let i = delayInSeconds; i >= 0 && isRunning; i--) {
 
+        //se esiste il file che ordina il force update
+        const forceupdate = config.getFile('eventi', 'forceupdate');
+        if (fs.existsSync(forceupdate)) {
+            fs.unlinkSync(forceupdate);
+            isRunning = false;
+        }
+
         if (i < delayInSeconds) {
-            process.stdout.write("\x1b[1A\x1b[2K");
-            process.stdout.write("\x1b[1A\x1b[2K");
-            process.stdout.write("\x1b[1A\x1b[2K");
+            process.stdout.write("\x1b[1A\x1b[2K".repeat(3));
         }
 
         let diffEventiLabel = '';
@@ -332,14 +338,7 @@ async function countdown(delayInSeconds, interrogazioni, failures, eventi, prevE
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
     //resetta la linea alla fine dei giochi di rewrite
-    /*
-    process.stdout.write("\x1b[1A\x1b[2K");
-    process.stdout.write("\x1b[1A\x1b[2K");
-    process.stdout.write("\x1b[1A\x1b[2K");
-    */
-    process.stdout.write("\x1b[1A\x1b[2K");
-    process.stdout.write("\x1b[1A\x1b[2K");
-    process.stdout.write("\x1b[1A\x1b[2K");
+    process.stdout.write("\x1b[1A\x1b[2K".repeat(3));
 
     process.stdin.setRawMode(false); // Disattiva la modalità raw quando hai finito
 }

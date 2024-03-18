@@ -525,6 +525,13 @@ class Config {
             fs.appendFileSync(file, content, 'utf8');
         else
             fs.writeFileSync(file, content, 'utf8');
+        return file;
+    }
+
+    getFile(domain, name){
+        const basedir = this.getPathByDomain({ domain });
+        const file = path.join(basedir, name);
+        return file;
     }
 
     getContent(domain, name){

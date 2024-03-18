@@ -11,6 +11,8 @@ import { commandLogin } from './commandLogin.js';
 
 import chalk from 'chalk';
 
+import fs from 'fs';
+
 const config = configurationSingleton.getInstance();
 const events = eventEmitterSingleton.getInstance();
 
@@ -93,6 +95,15 @@ export async function startApiServer({ port = 3000 }={}){
             }
             res.json({ json });
         });
+        app.get('/api/eventi/update', async (req, res) => {
+            let json = {error: 'error'};
+            try{
+                json = await apiEventiUpdate();
+            }
+            catch(e){
+            }
+            res.json({ json });
+        });
 
         app.get('/api/login', async (req, res) => {
             await loginProcedure(req, res);
@@ -171,4 +182,40 @@ async function loginProcedure(req, res) {
 
     // Finish the response after everything, including 2FA handling, is completed
     res.end('Login procedure completed.');
+}
+
+async function apiEventiUpdate(){
+
+    function waitForFileRemoval(filePath, timeout) {
+        return new Promise((resolve) => {
+            const startTime = Date.now();
+
+            // Function to check file existence
+            function checkFile() {
+                if (!fs.existsSync(filePath)) {
+                    resolve(true); // File does not exist, resolve the promise
+                } else if (Date.now() - startTime >= timeout) {
+                    resolve(false); // Timeout reached, resolve the promise with false
+                } else {
+                    setTimeout(checkFile, 100); // Check again after a delay
+                }
+            }
+
+            checkFile();
+        });
+    }
+
+    const signalFile = config.setContent('eventi', 'forceupdate', '', false);
+    const timeout = 5000; // 5 seconds
+    try {
+        const wasRemoved = await waitForFileRemoval(signalFile, timeout);
+        if (wasRemoved) {
+            return 'La procedura di aggiornamento stato è stata lanciata.';
+        } else {
+            fs.unlinkSync(signalFile);
+            return 'E\' scaduto il tempo di attesa per una risposta dal loop eventi.';
+        }
+    } catch (error) {
+        return 'An error occurred:' + error;
+    }
 }
