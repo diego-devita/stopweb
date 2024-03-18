@@ -69,10 +69,47 @@ export async function startApiServer({ port = 3000 }={}){
         app.use(express.json());
         app.use(compression());
 
-        //Econst compression = require('compression');
-        //app.use(compression({ flush: require('zlib').Z_SYNC_FLUSH }));
+        app.get('/stopweb', async (req, res) => {
+            // HTML content listing the routes
+            const htmlContent = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>stopweb API Index</title>
+                <script>
+                    var ws = new WebSocket('ws://localhost:3080');
+                    ws.onopen = function() {
+                        console.log('WebSocket connection established');
+                    };
+                    ws.onmessage = function(event) {
+                        console.log('Message from server:', event.data);
+                    };
+                    ws.onerror = function(error) {
+                        console.log('WebSocket error:', error);
+                    };
+                    ws.onclose = function() {
+                        console.log('WebSocket connection closed');
+                    }
+                </script>
+            </head>
+            <body>
+                <h1>stopweb API Endpoints</h1>
+                <ul>
+                    <li><a href="/api/timbrature/2022-01-01/2022-01-31">/api/timbrature/&lt;dataInizio&gt;/&lt;dataFine&gt;</a></li>
+                    <li><a href="/api/preferiti">/api/preferiti</a></li>
+                    <li><a href="/api/eventi">/api/eventi</a></li>
+                    <li><a href="/api/eventi/stato">/api/eventi/stato</a></li>
+                    <li><a href="/api/eventi/update">/api/eventi/update</a></li>
+                    <li><a href="/api/login">/api/login</a></li>
+                </ul>
+            </body>
+            </html>
+            `;
 
-        app.get('/', async (req, res) => {
+            // Send the HTML content as the response
+            res.send(htmlContent);
         });
 
         app.get('/api/timbrature/:dataInizio/:dataFine', async (req, res) => {
