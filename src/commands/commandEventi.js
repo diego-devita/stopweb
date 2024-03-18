@@ -161,24 +161,51 @@ export async function listen({
     console.log(style.white('-'.repeat(78))+'\n');
 
     let interrogazioni = 0;
+    let fallimenti = 0;
     let prevEventiCount = 0;
 
     while (true) {
 
         let noerror = true;
+        let newlines = 0;
         try{
+            //qui alla fine dei giochi sono 2 linee con a capo
+            //ma se va storto subito a rubrica, c'è una linea sola senza a capo
+            //e se va storto dopo a timbrature, ci sono 2 linee senza a capo
             await aggiornaStato();
+            newlines = 2;
         }
         catch(e){
+            //modo buzzurro di capire se si è fermato al primo o al secondo step
+            if(e.message === 'Rubrica'){
+            }else{
+                newlines = 1;
+            }
             noerror = false;
             //se è scaduta la login, l'aggiornamento dello stato può accusare
         }
-        interrogazioni += 1;
-        if(noerror)
+
+        let eventi = [];
+        //se non ci sono stati errori
+        if(noerror){
+            interrogazioni += 1;
+            //questa viene dopo l'a capo che segue un aggiornaStato senza errori
             console.log(style.success(` Lo stato è stato aggiornato!`));
-        else
+            newlines += 1;
+            //vengono letti gli eventi dallo stato
+            eventi = config.readEventi();
+        }
+        //altrimenti
+        else{
+            //gli eventi non vengono letti
+            //a questo punto emerge la necessità di avere eventi nel dominio listen!
+            fallimenti += 1;
+            //qui sta continuando la riga iniziata da "interrogando blabla..." dopo cui andrà a capo
             console.log(style.danger(` Login scaduta!`));
-        const eventi = config.readEventi();
+            newlines += 1;
+            console.log(style.danger(` Risolvere il problema prima dello scadere del countdown!`));
+            newlines += 1;
+        }
 
         function getRandomOffset(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -190,8 +217,22 @@ export async function listen({
         //30 sec minimo di sicurezza
         nextDelayInSeconds = Math.max(30, nextDelayInSeconds);
 
+        //ma verifica prima che l'ora attuale non ricada nella finestra di timeout (19pm-7am)
+        //questa cosa sarebbe da parametrizzare in config
+        const { rientra, ore, minuti } = calcolaTempoMancante(14, 7);
+        //se si,
+        if(rientra){
+            //ricalcola il prossimo delay = al tempo mancante fino alla fine del timeout
+            nextDelayInSeconds = (ore*60*60) + (minuti*60) + 60;
+            console.log(style.danger(` ATTENZIONE! FINESTRA PAUSA RAGGIUNTA. La pausa sarà terminata alle 7am.`));
+            newlines += 1;
+        }
+
         //aspetta col countdown
-        await countdown(nextDelayInSeconds, interrogazioni, eventi, prevEventiCount);
+        await countdown(nextDelayInSeconds, interrogazioni, fallimenti, eventi, prevEventiCount);
+
+        //sposta il cursore in alto un numero di newlines
+        process.stdout.write("\x1b[1A\x1b[2K".repeat(newlines));
 
         prevEventiCount = eventi.length;
     }
@@ -220,7 +261,14 @@ async function aggiornaStato(){
     //recupera le voci rubrica dei preferiti
     //e le processa per aggiornare lo stato interno che ne scova le differenze e farà scatenare eventuali eventi
     process.stdout.write(` Sto interrogando la rubrica preferiti...`);
-    let rubrica = await fetchRubrica({ cookieHeader: config.cookieHeader, idDipendente: -2 });
+    let rubrica;
+    try{
+        rubrica = await fetchRubrica({ cookieHeader: config.cookieHeader, idDipendente: -2 });
+    }
+    catch(e){
+        //qui avrei fatto meglio a puntare su MissingLogin
+        throw new Error('Rubrica');
+    }
     rubrica.forEach(dipendenteRubrica => processRubricaDataForEvents(dipendenteRubrica));
     process.stdout.write(style.true(`OK`));
     console.log();
@@ -228,7 +276,15 @@ async function aggiornaStato(){
     //come sopra per recuperare la giornata di oggi e scovare eventuali differenze
     process.stdout.write(` Sto interrogando le timbrature...`);
     const today = getTodayDateAsYYYYMMDD();
-    const giornate = await fetchGiornate({ dataInizio: today, dataFine: today, noCache: true, fetchTodayAlways: true });
+
+    let giornate;
+    try{
+        giornate = await fetchGiornate({ dataInizio: today, dataFine: today, noCache: true, fetchTodayAlways: true });
+    }
+    catch(e){
+        //qui avrei fatto meglio a puntare su MissingLogin
+        throw new Error('Giornate');
+    }
     processGiornataDataForEvents(today, giornate);
     process.stdout.write(style.true(`OK`));
     console.log();
@@ -237,7 +293,7 @@ async function aggiornaStato(){
     config.saveStatoEventi();
 }
 
-async function countdown(delayInSeconds, interrogazioni, eventi, prevEventiCount) {
+async function countdown(delayInSeconds, interrogazioni, failures, eventi, prevEventiCount) {
 
     // Attiva la modalità raw per process.stdin
     readline.emitKeypressEvents(process.stdin);
@@ -268,7 +324,7 @@ async function countdown(delayInSeconds, interrogazioni, eventi, prevEventiCount
         if(interrogazioni > 1)
             diffEventiLabel = ` (+${(eventi.length - prevEventiCount)})`;
 
-        console.log(` Tentativi svolti: ${style.stress(interrogazioni)} - Eventi in coda: ${style.stress(eventi.length)}${diffEventiLabel}`);
+        console.log(` Tentativi svolti: ${style.stress(interrogazioni)} - Fallimenti: ${style.stress(failures)} - Eventi in coda: ${style.stress(eventi.length)}${diffEventiLabel}`);
         console.log(` Prossimo tentativo: ${style.stress(i)} second(i) rimasti`);
         console.log(style.dim(` (Premere un tasto per saltare l'attesa o CTRL-C per interrompere)`));
 
@@ -276,12 +332,48 @@ async function countdown(delayInSeconds, interrogazioni, eventi, prevEventiCount
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
     //resetta la linea alla fine dei giochi di rewrite
+    /*
     process.stdout.write("\x1b[1A\x1b[2K");
     process.stdout.write("\x1b[1A\x1b[2K");
     process.stdout.write("\x1b[1A\x1b[2K");
+    */
     process.stdout.write("\x1b[1A\x1b[2K");
     process.stdout.write("\x1b[1A\x1b[2K");
     process.stdout.write("\x1b[1A\x1b[2K");
 
     process.stdin.setRawMode(false); // Disattiva la modalità raw quando hai finito
 }
+
+//oraFine (es.: 7 .. sarebbero le 7 di mattina, quando finisce la pausa polling)
+//oraInizio (es.: 19 .. sarebbero le 19 di pome, quando inizia la pausa polling)
+function calcolaTempoMancante(oraInizio, oraFine) {
+
+    const oraAttuale = new Date();
+    const oraDiFine = new Date(
+      oraAttuale.getFullYear(),
+      oraAttuale.getMonth(),
+      oraAttuale.getDate(),
+      oraFine, 0, 0, 0
+    );
+
+    // Se l'ora attuale è dopo le 19:00, impostiamo l'ora di fine al giorno successivo
+    if (oraAttuale.getHours() >= oraInizio) {
+      oraDiFine.setDate(oraDiFine.getDate() + 1);
+    } else if (oraAttuale.getHours() < 7) {
+      // L'ora di fine è già impostata correttamente per oggi
+    } else {
+      // Non siamo nell'intervallo richiesto
+      return { rientra: false, ore: 0, minuti: 0 };
+    }
+
+    // Calcola il tempo mancante in millisecondi
+    const tempoMancante = oraDiFine - oraAttuale;
+
+    // Converti in ore e minuti
+    const ore = Math.floor(tempoMancante / (1000 * 60 * 60));
+    const minuti = Math.floor((tempoMancante % (1000 * 60 * 60)) / (1000 * 60));
+
+    return { rientra: true, ore, minuti };
+  }
+
+
