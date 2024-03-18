@@ -95,6 +95,27 @@ export async function startApiServer({ port = 3000 }={}){
             }
             res.json({ json });
         });
+
+        app.get('/api/eventi', async (req, res) => {
+            let json = {error: 'error'};
+            try{
+                json = await apiEventi();
+            }
+            catch(e){
+            }
+            res.json({ json });
+        });
+
+        app.get('/api/eventi/stato', async (req, res) => {
+            let json = {error: 'error'};
+            try{
+                json = await apiStatoEventi();
+            }
+            catch(e){
+            }
+            res.json({ json });
+        });
+
         app.get('/api/eventi/update', async (req, res) => {
             let json = {error: 'error'};
             try{
@@ -182,6 +203,16 @@ async function loginProcedure(req, res) {
 
     // Finish the response after everything, including 2FA handling, is completed
     res.end('Login procedure completed.');
+}
+
+async function apiEventi(){
+    const eventi = config.readEventi();
+    return eventi;
+}
+
+async function apiStatoEventi(){
+    const statoEventi = config.statoEventi;
+    return statoEventi;
 }
 
 async function apiEventiUpdate(){
