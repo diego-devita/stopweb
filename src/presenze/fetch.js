@@ -11,15 +11,15 @@ import fs from 'fs';
 
 const url_cartellino = config.get('cartellino.url');
 
-//attiva la risposta fasulla
-const MOCK_API = config.mock;
-//costruisce una risposta fasulla copiandola
-const BUILD_MOCK = false;
-//percorso del file che conserva l'ultima risposta fasulla creata
-const MOCK_FILE = config.getPathByDomain({domain: 'cache'}) + '/response-cartellino';
-
 //interroga l'api e restituisce le giornate trasformate
 export async function fetchGiornateCartellino(idDipendente, cookieHeader, dataInizio, dataFine){
+
+    //attiva la risposta fasulla
+    const MOCK_API = config.getExtra('mock');
+    //costruisce una risposta fasulla copiandola
+    const BUILD_MOCK = config.getExtra('mockRecord');
+    //percorso del file che conserva l'ultima risposta fasulla creata
+    const MOCK_FILE = config.getPathByDomain({domain: 'cache'}) + '/response-cartellino';
 
     let originalData;
     if(MOCK_API)

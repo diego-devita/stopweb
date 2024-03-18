@@ -108,6 +108,7 @@ export function validateArgs(command, options){
     const commandsRules = {
         '*': {
             'nocolor': isBooleanTrueValue,
+            'mock': (value) => { return ['replay', 'record'].includes(value) || isBooleanTrueValue(value) },
         },
         'help': {
             //'cols': (value) => { return ( isStringNumber(value) && parseInt(value) >= 74 ); },

@@ -7,13 +7,6 @@ import { ExpiredLoginError } from '../commons/errors.js';
 
 const url_rubrica = config.get('rubrica.url');
 
-//attiva la risposta fasulla
-const MOCK_API = config.mock;
-//costruisce una risposta fasulla copiandola
-const BUILD_MOCK = false;
-//percorso del file che conserva l'ultima risposta fasulla creata
-const MOCK_FILE = config.getPathByDomain({domain: 'cache'}) + '/response-rubrica';
-
 export async function fetchElenco({cookieHeader}){
 
     const prepareUrl = ()=>{
@@ -55,11 +48,18 @@ export async function fetchElenco({cookieHeader}){
 
 export async function fetchRubrica({cookieHeader, idDipendente = -1}) {
 
+    //attiva la risposta fasulla
+    const MOCK_API = config.getExtra('mock');
+    //costruisce una risposta fasulla copiandola
+    const BUILD_MOCK = config.getExtra('mockRecord');
+    //percorso del file che conserva l'ultima risposta fasulla creata
+    const MOCK_FILE = config.getPathByDomain({domain: 'cache'}) + '/response-rubrica';
+
     let originalData;
     if(MOCK_API)
         originalData = { json: ()=>{ return JSON.parse( fs.readFileSync(MOCK_FILE, 'utf-8') ) }}
     else
-        originalData = await fetchRubricaFromApi(idDipendente, cookieHeader, dataInizio, dataFine);
+        originalData = await fetchRubricaFromApi(idDipendente, cookieHeader);
 
     async function fetchRubricaFromApi(idDipendente, cookieHeader){
         const prepareUrl = (idDipendente)=>{
@@ -83,6 +83,8 @@ export async function fetchRubrica({cookieHeader, idDipendente = -1}) {
             throw new ExpiredLoginError();
             //throw new Error(`Error: ${response.statusText}`);
         }
+
+        return response;
     }
 
     let jsonData;

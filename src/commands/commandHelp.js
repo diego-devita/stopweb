@@ -256,7 +256,9 @@ export async function commandHelp({ showSintesi = true, comando, grid } = {}){
     const comandi = {
         '*': {
             esempi: [
-                { uso: '[comando] [..opz] --nocolor', descrizione: 'Non utilizza i colori' }
+                { uso: '[comando] [..opz] --nocolor', descrizione: 'Non utilizza i colori' },
+                { uso: '[comando] [..opz] --mock [replay]', descrizione: 'Usa mock api invece di api remota' },
+                { uso: '[comando] [..opz] --mock record', descrizione: 'Registra l\'ultima response ricevuta, da usare con mock replay' },
             ]
         },
         'help': {

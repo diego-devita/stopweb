@@ -75,6 +75,14 @@ try{
     process.exit();
 }
 
+//temporaneamente aggiunta a tutti i comandi per fare prima (da rivedere.. intanto ha il default in config)
+if(args.options.mock === true || args.options.mock === 'replay'){
+    config.setExtra({mock: true, mockRecord: false})
+}
+else if(args.options.mock === 'record'){
+    config.setExtra({mock: false, mockRecord: true})
+}
+
 if (args.options.nocolor)
     chalk.level = 0;
 

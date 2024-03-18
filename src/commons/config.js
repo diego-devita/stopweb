@@ -160,7 +160,7 @@ class Config {
         return profiloPath;
     }
 
-    constructor(nome, version, releaseDate, chiaveTOS, profiliBaseDir, mock) {
+    constructor(nome, version, releaseDate, chiaveTOS, profiliBaseDir, mock, mockRecord) {
 
         if (!Config.instance) {
 
@@ -194,7 +194,8 @@ class Config {
             this.releaseDate = releaseDate;
             this.version = version;
             this.chiaveTOS = chiaveTOS;
-            this.mock = mock;
+            this.extra = {};
+            this.setExtra({mock, mockRecord});
 
             //prova a caricare la configurazione dallo yaml e si segna l'oggetto configurazione ricevuto
             //se lo yaml esiste ed è valido, l'oggetto è lo yaml {type: 'YAML' ...} altrimenti è un oggetto {type: 'empty', data: {}}
@@ -321,6 +322,17 @@ class Config {
             'rubrica.gruppi': {},
         }
     }
+
+    setExtra(extraObject) {
+        for (const [key, value] of Object.entries(extraObject)) {
+            this.extra[key] = value;
+        }
+    }
+
+    getExtra(key){
+        return this.extra[key];
+    }
+
 
     isKeyOnFile(key){
         if (key in this._config)
@@ -1067,7 +1079,8 @@ const nome = 'stopweb';
 const versione = '1.2.0';
 const releaseDate = '12/03/2024';
 const chiaveTOS = 'ff97941154c92b0c515681f754b0bfb9';
-const mock = true;
+const mock = false;
+const mockRecord = false;
 
 const profiliBaseDir = {
     //nome della var d'ambiente contenente il path usato per recuperare i profili
@@ -1080,7 +1093,7 @@ const profiliBaseDir = {
     'PROFILO_SELEZIONATO': '.selezionato'
 };
 
-const instance = new Config(nome, versione, releaseDate, chiaveTOS, profiliBaseDir, mock);
+const instance = new Config(nome, versione, releaseDate, chiaveTOS, profiliBaseDir, mock, mockRecord);
 Object.freeze(instance);
 
 //module.exports = instance;
