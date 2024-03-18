@@ -69,7 +69,7 @@ export async function startApiServer({ port = 3000 }={}){
         app.use(express.json());
         app.use(compression());
 
-        app.get('/stopweb', async (req, res) => {
+        const showIndex = async (req, res) => {
             // HTML content listing the routes
             const htmlContent = `
             <!DOCTYPE html>
@@ -97,12 +97,12 @@ export async function startApiServer({ port = 3000 }={}){
             <body>
                 <h1>stopweb API Endpoints</h1>
                 <ul>
-                    <li><a href="/api/timbrature/2022-01-01/2022-01-31">/api/timbrature/&lt;dataInizio&gt;/&lt;dataFine&gt;</a></li>
-                    <li><a href="/api/preferiti">/api/preferiti</a></li>
-                    <li><a href="/api/eventi">/api/eventi</a></li>
-                    <li><a href="/api/eventi/stato">/api/eventi/stato</a></li>
-                    <li><a href="/api/eventi/update">/api/eventi/update</a></li>
-                    <li><a href="/api/login">/api/login</a></li>
+                    <li><a href="/stopweb/api/timbrature/2022-01-01/2022-01-31">/stopweb/api/timbrature/&lt;dataInizio&gt;/&lt;dataFine&gt;</a></li>
+                    <li><a href="/stopweb/api/preferiti">/stopweb/api/preferiti</a></li>
+                    <li><a href="/stopweb/api/eventi">/stopweb/api/eventi</a></li>
+                    <li><a href="/stopweb/api/eventi/stato">/stopweb/api/eventi/stato</a></li>
+                    <li><a href="/stopweb/api/eventi/update">/stopweb/api/eventi/update</a></li>
+                    <li><a href="/stopweb/api/login">/stopweb/api/login</a></li>
                 </ul>
             </body>
             </html>
@@ -110,9 +110,13 @@ export async function startApiServer({ port = 3000 }={}){
 
             // Send the HTML content as the response
             res.send(htmlContent);
-        });
+        }
 
-        app.get('/api/timbrature/:dataInizio/:dataFine', async (req, res) => {
+        app.get('/', showIndex);
+        app.get('/stopweb', showIndex);
+        app.get('/stopweb/api', showIndex);
+
+        app.get('/stopweb/api/timbrature/:dataInizio/:dataFine', async (req, res) => {
             const { dataInizio, dataFine } = req.params;
             let json = {error: 'error'};
             try{
@@ -123,7 +127,7 @@ export async function startApiServer({ port = 3000 }={}){
             res.json({ json });
         });
 
-        app.get('/api/preferiti', async (req, res) => {
+        app.get('/stopweb/api/preferiti', async (req, res) => {
             let json = {error: 'error'};
             try{
                 json = await apiPreferiti();
@@ -133,7 +137,7 @@ export async function startApiServer({ port = 3000 }={}){
             res.json({ json });
         });
 
-        app.get('/api/eventi', async (req, res) => {
+        app.get('/stopweb/api/eventi', async (req, res) => {
             let json = {error: 'error'};
             try{
                 json = await apiEventi();
@@ -143,7 +147,7 @@ export async function startApiServer({ port = 3000 }={}){
             res.json({ json });
         });
 
-        app.get('/api/eventi/stato', async (req, res) => {
+        app.get('/stopweb/api/eventi/stato', async (req, res) => {
             let json = {error: 'error'};
             try{
                 json = await apiStatoEventi();
@@ -153,7 +157,7 @@ export async function startApiServer({ port = 3000 }={}){
             res.json({ json });
         });
 
-        app.get('/api/eventi/update', async (req, res) => {
+        app.get('/stopweb/api/eventi/update', async (req, res) => {
             let json = {error: 'error'};
             try{
                 json = await apiEventiUpdate();
@@ -163,7 +167,7 @@ export async function startApiServer({ port = 3000 }={}){
             res.json({ json });
         });
 
-        app.get('/api/login', async (req, res) => {
+        app.get('/stopweb/api/login', async (req, res) => {
             await loginProcedure(req, res);
         });
 
