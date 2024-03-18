@@ -37,6 +37,7 @@ style.assente = chalk.redBright.bold;
 
 style.dim = chalk.dim;
 style.stress = chalk.yellow;
+style.white = chalk.whiteBright;
 
 function printEventi(eventi){
 
@@ -152,12 +153,12 @@ export async function listen({
     }
 
     //console.log('-'.repeat(45));
-    console.log(style.dim('-'.repeat(78)));
+    console.log(style.white('-'.repeat(78)));
     console.log(style.stress(` [stopweb v.`) + style.dim(config.version) + style.stress(']') + style.dim(' - Ascolto degli eventi'));
-    console.log(style.dim('-'.repeat(78)));
+    console.log(style.white('-'.repeat(78)));
     console.log(style.dim(` delaySeconds: ${delayInSeconds}`));
     console.log(style.dim(` randomOffsetRange: ${randomOffsetRange}`));
-    console.log(style.dim('-'.repeat(78))+'\n');
+    console.log(style.white('-'.repeat(78))+'\n');
 
     let interrogazioni = 0;
     let prevEventiCount = 0;

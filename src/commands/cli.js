@@ -384,13 +384,47 @@ switch (args.command) {
         break;
     case 'eventi':
 
-        function startApi({nows = false}={}){
+        async function lanciaServer({api = false, ws = false} = {}){
+
             console.log('------------------------------------------------------------------------------');
-            console.log(' visitare http://localhost:3000/stopweb/api/ per i dettagli');
-            console.log(' aprire una connessione con ws://localhost:3080/ per gli eventi');
-            if(!nows)
-                startWebSocket();
-            startApiServer();
+            if(api){
+                if(api === true){
+                    await lanciaApi(3000);
+                }else{
+                    const port = parseInt(args.options.api);
+                    await lanciaApi(port);
+                }
+            }
+            if(ws){
+                if(ws === true){
+                    await lanciaWebSocket(3080);
+                }else{
+                    const port = parseInt(ws);
+                    await lanciaWebSocket(port);
+                }
+            }
+        }
+
+
+        async function lanciaApi(port){
+            try{
+                const apiServer = await startApiServer({ port });
+                //console.log(chalk.green(`api json attive - visitare http://localhost:${port}/stopweb/api/ per i dettagli`));
+            }catch(e){
+                process.exit(1);
+                //console.log(chalk.red(`Il server web per le api json non è in piedi (errore sulla porta ${port})`));
+            }
+        }
+
+        async function lanciaWebSocket(port){
+            try{
+                const ws = await startWebSocket({ port });
+                //console.log(chalk.green(`websocket eventi attivo - aprire una connessione con ws://localhost:${port}/ per gli eventi`));
+            }
+            catch(e){
+                process.exit(1);
+                //console.log(chalk.red(`Il web socket non è in piedi (errore sulla porta ${port})`));
+            }
         }
 
         if(args.options.storicizza){
@@ -403,9 +437,7 @@ switch (args.command) {
         else if(args.options.listen){
             //await listen({delayInSeconds: 10,randomOffsetRange: [0,0]});
 
-            if(args.options.api){
-                startApi({nows: false});
-            }
+            await lanciaServer({api: args.options.api, ws: args.options.ws});
 
             await listen({
                 delayInSeconds: args.options.delay,
@@ -414,8 +446,8 @@ switch (args.command) {
             });
 
         }
-        else if( args.options.apionly === true ){
-            startApi({nows: true});
+        else if( args.options.apionly ){
+            await lanciaServer({api: true, ws: false});
         }
         else{
             printCodaEventi();

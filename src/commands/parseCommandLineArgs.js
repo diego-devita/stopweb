@@ -208,8 +208,9 @@ export function validateArgs(command, options){
             'listen': isBooleanTrueValue,
             'delay': isStringNumber,
             'offset':  (value) => { return /^[-+]?[0-9]+,[-+]?[0-9]+$/.test(value); },
-            'api': isBooleanTrueValue,
-            'apionly': isBooleanTrueValue,
+            'api': (value) => isBooleanTrueValue(value) || isStringNumber(value),
+            'ws': (value) => isBooleanTrueValue(value) || isStringNumber(value),
+            'apionly': (value) => isBooleanTrueValue(value) || isStringNumber(value),
         }
     }
 
