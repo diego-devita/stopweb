@@ -1,11 +1,13 @@
 import { WebSocketServer } from 'ws'
 
+import compression from 'compression';
 import express from 'express';
 import configurationSingleton from '../commons/config.js';
 import eventEmitterSingleton from '../commons/eventEmitter.js';
 
 import { fetchGiornateCartellinoRAW } from '../presenze/fetch.js';
 import { fetchRubrica } from '../presenze/rubrica.js';
+import { commandLogin } from './commandLogin.js';
 
 import chalk from 'chalk';
 
@@ -63,6 +65,10 @@ export async function startApiServer({ port = 3000 }={}){
     return new Promise((resolve, reject) => {
         const app = express();
         app.use(express.json());
+        app.use(compression());
+
+        //Econst compression = require('compression');
+        //app.use(compression({ flush: require('zlib').Z_SYNC_FLUSH }));
 
         app.get('/', async (req, res) => {
         });
@@ -86,6 +92,10 @@ export async function startApiServer({ port = 3000 }={}){
                 //login scaduta in tutta probabilità
             }
             res.json({ json });
+        });
+
+        app.get('/api/login', async (req, res) => {
+            await loginProcedure(req, res);
         });
 
         const server = app.listen(port, () => {
@@ -113,4 +123,52 @@ async function apiPreferiti(){
 async function apiTimbrature({ dataInizio, dataFine } = {}){
     const json = await fetchGiornateCartellinoRAW(config.idDipendente, config.cookieHeader, dataInizio, dataFine);
     return json;
+}
+
+async function loginProcedure(req, res) {
+
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+
+    // Pre-setup for capturing the 2FA code as soon as the event occurs
+    let code2FAPromiseResolve;
+    const code2FAPromise = new Promise((resolve) => {
+        code2FAPromiseResolve = resolve;
+    });
+
+    events.on('login.success.2FA', ({ code2FA }) => {
+        res.write(`2FA Code: ${code2FA}\n`); // Echo the 2FA code in the response
+        res.flush();
+        code2FAPromiseResolve(); // Resolve the promise when the event occurs
+    });
+
+    // Now, initiate the login procedure which could trigger the 2FA event
+    try {
+        const loginDetails = {
+            headless: config.get('login.headless'),
+            url: config.get('login.url'),
+            username: config.get('login.username'),
+            password: config.get('login.password'),
+            expectedLandingPage: config.get('login.landingPage'),
+            timeoutSeconds: config.get('login.timeoutSeconds'),
+            p: (m)=>{ return m;}//>null
+        };
+        res.write(`Attempting the login...\n`);
+        res.flush();
+        await commandLogin(loginDetails);
+
+        // Wait for the 2FA event to be handled, if it hasn't been already
+        await code2FAPromise;
+    } catch (error) {
+        // Handle any errors that might occur during login
+        //console.error('An error occurred during login:', error);
+        res.write(`Error occurred!\n` + error.message + '\n');
+        res.flush();
+    } finally {
+        // Cleanup: Remove the event listener to prevent memory leaks
+        events.removeAllListeners('login.success.2FA');
+    }
+
+    // Finish the response after everything, including 2FA handling, is completed
+    res.end('Login procedure completed.');
 }
