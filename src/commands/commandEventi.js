@@ -232,7 +232,7 @@ export async function listen({
 
         //ma verifica prima che l'ora attuale non ricada nella finestra di timeout (19pm-7am)
         //questa cosa sarebbe da parametrizzare in config
-        const { rientra, ore, minuti } = calcolaTempoMancante(14, 7);
+        const { rientra, ore, minuti } = calcolaTempoMancante(19, 7);
         //se si,
         if(rientra){
             //ricalcola il prossimo delay = al tempo mancante fino alla fine del timeout
