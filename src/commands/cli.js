@@ -386,6 +386,9 @@ switch (args.command) {
 
         async function lanciaServer({api = false, ws = false} = {}){
 
+            if(!api && !ws)
+                return;
+
             console.log('------------------------------------------------------------------------------');
             if(api){
                 if(api === true){
