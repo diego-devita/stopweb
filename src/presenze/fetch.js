@@ -44,11 +44,21 @@ export async function fetchGiornateCartellino(idDipendente, cookieHeader, dataIn
 //interroga l'api e restituisce il json originale ricevuto
 export async function fetchGiornateCartellinoRAW(idDipendente, cookieHeader, dataInizio, dataFine){
 
+    //attiva la risposta fasulla
+    const MOCK_API = config.getExtra('mock');
+    //costruisce una risposta fasulla copiandola
+    const BUILD_MOCK = config.getExtra('mockRecord');
+    //percorso del file che conserva l'ultima risposta fasulla creata
+    const MOCK_FILE = config.getPathByDomain({domain: 'cache'}) + '/response-cartellino-raw';
+
     let originalData;
     if(MOCK_API)
         originalData = { json: ()=>{ return JSON.parse( fs.readFileSync(MOCK_FILE, 'utf-8') ) }}
     else
         originalData = await fetchCartellino(idDipendente, cookieHeader, dataInizio, dataFine);
+
+    if(BUILD_MOCK)
+        fs.writeFileSync(MOCK_FILE, JSON.stringify(jsonData, null, 2));
 
     return await originalData.json();
 }
