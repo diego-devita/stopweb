@@ -1,5 +1,6 @@
-import { WebSocketServer } from 'ws'
+import { WebSocketServer, WebSocket} from 'ws'
 
+import https from 'https';
 import compression from 'compression';
 import express from 'express';
 import configurationSingleton from '../commons/config.js';
@@ -8,6 +9,8 @@ import eventEmitterSingleton from '../commons/eventEmitter.js';
 import { fetchGiornateCartellinoRAW } from '../presenze/fetch.js';
 import { fetchRubrica } from '../presenze/rubrica.js';
 import { commandLogin } from './commandLogin.js';
+
+import path from 'path';
 
 import chalk from 'chalk';
 
@@ -116,31 +119,104 @@ export async function startApiServer({ port = 3000 }={}){
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>stopweb API Index</title>
-                <script>
-                    var ws = new WebSocket('ws://localhost:3080');
-                    ws.onopen = function() {
-                        console.log('WebSocket connection established');
-                    };
-                    ws.onmessage = function(event) {
-                        console.log('Message from server:', event.data);
-                    };
-                    ws.onerror = function(error) {
-                        console.log('WebSocket error:', error);
-                    };
-                    ws.onclose = function() {
-                        console.log('WebSocket connection closed');
+                <style>
+                    #websocket input{
+                        width: 3em;
+                        margin-left: 0.25em;
                     }
+                    #websocket button{
+                        margin-left: 0.25em;
+                    }
+                    #output{
+                        list-style: none;
+                    }
+                    #output pre{
+                        background: lightgray;
+                        padding: 1em;
+                        border: dashed 1px;
+                        width: fit-content;
+                        min-width: 15em;
+                    }
+                </style>
+                <script>
+
+                    function getWebSocketURL(port) {
+                        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                        const wsHost = window.location.hostname;
+                        const wsURL = wsProtocol + '//' + wsHost + ':' + port;
+
+                        return wsURL;
+                    }
+
+                    function connectToWebSocket(url){
+                        var ws = new WebSocket(url);
+
+                        ws.onopen = function() {
+                            document.querySelector('#output pre').textContent += 'WebSocket connection established\\n';
+                        };
+                        ws.onmessage = function(event) {
+                            document.querySelector('#output pre').textContent += 'Message from server:\\n' + event.data + '\\n';
+                        };
+                        ws.onerror = function(error) {
+                            document.querySelector('#output pre').textContent += 'WebSocket error:\\n' + error + '\\n';
+                        };
+                        ws.onclose = function() {
+                            document.querySelector('#output pre').textContent += 'WebSocket connection closed\\n';
+                        }
+                    }
+
+                    function getTodayAsYYYYMMDD() {
+                        const today = new Date();
+                        const yyyy = today.getFullYear();
+                        let mm = today.getMonth() + 1;
+                        let dd = today.getDate();
+                        mm = mm < 10 ? '0' + mm : mm;
+                        dd = dd < 10 ? '0' + dd : dd;
+                        return yyyy + mm + dd;
+                    }
+
+                    function connectToGivenPort(){
+                        const port = document.querySelector('#websocket input').value;
+                        const url = getWebSocketURL(port);
+                        connectToWebSocket(url);
+                    }
+
+                    function replacePlaceholders(){
+                        const li = document.getElementById('api_timbrature');
+                        let url = li.querySelector('a').href;
+                        url = url.replace('[datainizio]', getTodayAsYYYYMMDD());
+                        url = url.replace('[datafine]', getTodayAsYYYYMMDD());
+                        li.querySelector('a').href = url;
+                    }
+
+                    document.addEventListener('DOMContentLoaded',()=>{
+                        replacePlaceholders();
+                        const wsUrl = getWebSocketURL('');
+                        document.querySelector('#websocket .hostname').textContent = wsUrl;
+                    });
+
                 </script>
             </head>
             <body>
-                <h1>stopweb API Endpoints</h1>
+                <h2>stopweb API Endpoints</h2>
                 <ul>
-                    <li><a href="/stopweb/api/timbrature/2022-01-01/2022-01-31">/stopweb/api/timbrature/&lt;dataInizio&gt;/&lt;dataFine&gt;</a></li>
-                    <li><a href="/stopweb/api/preferiti">/stopweb/api/preferiti</a></li>
-                    <li><a href="/stopweb/api/eventi">/stopweb/api/eventi</a></li>
-                    <li><a href="/stopweb/api/eventi/stato">/stopweb/api/eventi/stato</a></li>
-                    <li><a href="/stopweb/api/eventi/update">/stopweb/api/eventi/update</a></li>
-                    <li><a href="/stopweb/api/login">/stopweb/api/login</a></li>
+                    <li id="api_timbrature"><a href="/stopweb/api/timbrature/[datainizio]/[datafine]">/stopweb/api/timbrature/&lt;dataInizio&gt;/&lt;dataFine&gt;</a></li>
+                    <li id="api_preferiti"><a href="/stopweb/api/preferiti">/stopweb/api/preferiti</a></li>
+                    <li id="api_eventi"><a href="/stopweb/api/eventi">/stopweb/api/eventi</a></li>
+                    <li id="api_eventi_stato"><a href="/stopweb/api/eventi/stato">/stopweb/api/eventi/stato</a></li>
+                    <li id="api_eventi_update"><a href="/stopweb/api/eventi/update">/stopweb/api/eventi/update</a></li>
+                    <li id="api_login"><a href="/stopweb/api/login">/stopweb/api/login</a></li>
+                </ul>
+                <h2>stopweb Events Websocket</h2>
+                <ul>
+                    <li id="websocket">
+                        <span class="hostname"></span>
+                        <span><input type="text" value="?"></span>
+                        <button onclick="connectToGivenPort();">connect</button>
+                    </li>
+                    <li id="output">
+                        <pre></pre>
+                    </li>
                 </ul>
             </body>
             </html>
