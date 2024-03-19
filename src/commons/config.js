@@ -1087,9 +1087,9 @@ class Config {
 }
 
 const nome = 'stopweb';
-const versione = '1.2.0';
-const releaseDate = '12/03/2024';
-const chiaveTOS = 'ff97941154c92b0c515681f754b0bfb9';
+const versione = '2.0.0';
+const releaseDate = '19/03/2024';
+const chiaveTOS = 'fbb9cd58fca212e4920880f1bdeaeeee';
 const mock = false;
 const mockRecord = false;
 

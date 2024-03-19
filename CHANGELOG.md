@@ -4,6 +4,23 @@ Tutte le modifiche significative a questo progetto verranno documentate in quest
 
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), e questo progetto aderisce a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2024-03-19
+
+### Added
+- config supporta gli eventi che occupano un nuovo spazio in userdata
+- creato nuovo comando `eventi` con varie opzioni
+- `eventi` - opzione `--listen`: interroga presenze per aggiornare lo stato e scatenare gli eventi
+- `eventi` - opzione `--api`: usato insieme a `--listen`, espone le api web
+- `eventi` - opzione `--ws`: usato insieme a `--listen`, espone un web socket con gli eventi in tempo reale
+- `eventi` - opzione `--apionly`: espone solo le api web senza mai riaggiornare lo stato eventi
+- `eventi` - (senza opzione): mostra gli eventi nella coda degli eventi
+- `eventi` opzione `--storicizza`, svuota la code eventi e la calendarizza
+- `eventi` opzione `--storia`, interroga la storia degli eventi
+- `rubrica` - opzione `--noindent`: da usare insieme a `--gruppo`
+- `rubrica` - aggiunto somma di filtri multipli e nuove opzioni `--tel` `--nominativo`
+- In generale - nuova opzione `--mock` per registrare e riprodurre chiamate api
+- Per il supporto a ssl (per le api e il ws) è necessario avere i file pem in `./config`
+
 ## [1.2.0] - 2024-03-12
 
 ### Changed
