@@ -254,6 +254,11 @@ export async function listen({
 
 async function aggiornaStato(){
 
+    //forza che lo stato sia ricaricato dal file con stato changed=false
+    //altrimenti rimane stantio lo stato in memoria scollato dal file e meno controllabile
+    //(purtroppo non si può perché l'oggetto è freeze)
+    //config.loadStatoEventi();
+
     function processRubricaDataForEvents(dipendenteRubrica){
         config.updateStatoEventiPreferiti({
             idDipendente: dipendenteRubrica.id,
