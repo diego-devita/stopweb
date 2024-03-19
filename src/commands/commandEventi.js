@@ -48,13 +48,27 @@ function printEventi(eventi){
 
         const timestamp = new Date(evento.timestamp);
         const timestampFormatted = formatTimestamp(timestamp);
-        const eventName = style.eventName(evento.evento.padEnd(40, '-'));
+        const eventName = style.eventName(mapEventName(evento.evento).padEnd(40, '-'));
 
         const header = `${style.timestamp(timestampFormatted)} ${eventName}`;
         let id, nominativo;
-        if(evento.evento.startsWith('Pref_')){
+        if(evento.evento.startsWith('eventi.preferiti')){
             id = payload.idDipendente.toString().padEnd(4,' ');
             nominativo = style.nominativo (payload.nominativo.padEnd(30, '-'));
+        }
+
+        function mapEventName(e){
+            const map = {
+                'eventi.timbrature.nuovoGiorno': 'timbrature.nuovogiorno',
+                'eventi.timbrature.variazione': 'timbrature.variazione',
+                'eventi.preferiti.dipendente.nuovo': 'preferiti.nuovo',
+                'eventi.preferiti.dipendente.reset': 'preferiti.reset',
+                'eventi.preferiti.stato.variazione': 'preferiti.stato.variazione',
+                'eventi.preferiti.giustificativo.oggi.variazioneDaIeri': 'preferiti.giust.oggi.varDaIeri',
+                'eventi.preferiti.giustificativo.oggi.variazioneDaOggi': 'preferiti.giust.oggi.varDaOggi',
+                'eventi.preferiti.giustificativo.domani.variazioneDaOggi': 'preferiti.giust.domani.variazione',
+            }
+            return map[e];
         }
 
         function formatStatoPresenza(stato){
@@ -89,25 +103,25 @@ function printEventi(eventi){
         }
 
         switch(evento.evento){
-            case 'Timbr_NuovoGiorno':
+            case 'eventi.timbrature.nuovoGiorno':
                 console.log(`${header} ${payload.giorno} ${payload.timbrature}`);
                 break;
-            case 'Timbr_Cambio':
+            case 'eventi.timbrature.variazione':
                 console.log(`${header} ${payload.giorno} ${payload.dopo}`);
                 break;
-            case 'Pref_Nuovo':
-            case 'Pref_Reset':
+            case 'eventi.preferiti.dipendente.nuovo':
+            case 'eventi.preferiti.dipendente.reset':
                 const macrostato = formatStatoPresenza(payload.macrostato);
                 console.log(`${header} ${id} ${nominativo} ${macrostato} ${style.oggi('OGG')}${style.colon(':')}${formatGiust(payload.oggi)} ${style.domani('DOM')}${style.colon(':')}${formatGiust(payload.domani)}`);
                 break;
-            case 'Pref_CambioStato':
+            case 'eventi.preferiti.stato.variazione':
                 const statoPrecedente = formatStatoPresenza(payload.precedente);
                 const statoAttuale = formatStatoPresenza(payload.attuale);
                 console.log(`${header} ${id} ${nominativo} ${statoPrecedente} => ${statoAttuale}`);
                 break;
-            case 'Pref_CambioGiust_Oggi-DomaniDiIeri':
-            case 'Pref_CambioGiust_Oggi-OggiDiOggi':
-            case 'Pref_CambioGiust_Domani-DomaniDiOggi':
+            case 'eventi.preferiti.giustificativo.oggi.variazioneDaIeri':
+            case 'eventi.preferiti.giustificativo.oggi.variazioneDaOggi':
+            case 'eventi.preferiti.giustificativo.domani.variazioneDaOggi':
                 console.log(`${header} ${id} ${nominativo} ${formatGiust(payload.precedente)} => ${formatGiust(payload.attuale)}`);
                 break;
             default:
