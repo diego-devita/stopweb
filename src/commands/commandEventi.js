@@ -163,10 +163,6 @@ export async function listen({
     randomOffsetRange = [-180, 360],
 } = {}){
 
-    function getRandomOffset(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-
     //console.log('-'.repeat(45));
     console.log(style.white('-'.repeat(78)));
     console.log(style.stress(` [stopweb v.`) + style.dim(config.version) + style.stress(']') + style.dim(' - Ascolto degli eventi'));
@@ -175,9 +171,12 @@ export async function listen({
     console.log(style.dim(` randomOffsetRange: ${randomOffsetRange}`));
     console.log(style.white('-'.repeat(78))+'\n');
 
+    let eventi = [];
+    eventi = config.readEventi();
+
     let interrogazioni = 0;
     let fallimenti = 0;
-    let prevEventiCount = 0;
+    let prevEventiCount = eventi.length;
 
     while (true) {
 
@@ -200,7 +199,6 @@ export async function listen({
             //se è scaduta la login, l'aggiornamento dello stato può accusare
         }
 
-        let eventi = [];
         //se non ci sono stati errori
         if(noerror){
             interrogazioni += 1;
@@ -341,7 +339,7 @@ async function countdown(delayInSeconds, interrogazioni, failures, eventi, prevE
         }
 
         let diffEventiLabel = '';
-        if(interrogazioni > 1)
+        //if(interrogazioni > 1)
             diffEventiLabel = ` (+${(eventi.length - prevEventiCount)})`;
 
         console.log(` Tentativi svolti: ${style.stress(interrogazioni)} - Fallimenti: ${style.stress(failures)} - Eventi in coda: ${style.stress(eventi.length)}${diffEventiLabel}`);
