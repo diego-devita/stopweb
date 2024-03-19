@@ -21,14 +21,52 @@ const msgFail_api = (error) => chalk.red(` Errore durante l'avvio dell'API Serve
 const msgSuccess_ws = (port) => chalk.green(` WebSocket in ascolto sulla porta ${port} - ws://localhost:${port}`);
 const msgFail_ws = (error) => chalk.red(` Si è verificato un errore con il server WebSocket: ${error.message}`);
 
+function getPemCredentials(){
+
+    const basedir = config.getConfigDir();
+    const privateKeyPath = path.join(basedir, 'key.pem');
+    const certificatePath = path.join(basedir, 'cert.pem');
+
+    const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+    const certificate = fs.readFileSync(certificatePath, 'utf8');
+
+    return  { key: privateKey, cert: certificate };
+}
+
 export function startWebSocket({ port = 3080 } = {}){
 
     return new Promise((resolve, reject) => {
 
-        const wss = new WebSocketServer({ port }, () => {
-            console.log(msgSuccess_ws(port));
-            resolve(wss);
-        });
+        let credentials;
+        let httpsMode = false;
+        try{
+            credentials = getPemCredentials();
+            httpsMode = true;
+        }
+        catch(e){
+           //se si rompe in tutta probabilità perché i file pem non esistono
+           //e tanto vale che sia il criterio per stabili di aprire la connessione in http o in https
+           //i file pem necessari possono essere creati con:
+           //openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=IT/ST=Italy/L=Rome/O=stopweb/OU=stopweb/CN="
+           //e vanno messi in $profilo/config/
+        }
+        let server;
+        let wss;
+        if(httpsMode){
+            server = https.createServer(credentials);
+            wss = new WebSocketServer({ server });
+
+            server.listen(port, () => {
+                console.log(msgSuccess_ws(port));
+                resolve(wss);
+            });
+        }
+        else{
+            wss = new WebSocketServer({ port }, () => {
+                console.log(msgSuccess_ws(port));
+                resolve(wss);
+            });
+        }
 
         wss.on('error', (error) => {
             console.error(msgFail_ws(error));
@@ -171,15 +209,40 @@ export async function startApiServer({ port = 3000 }={}){
             await loginProcedure(req, res);
         });
 
-        const server = app.listen(port, () => {
-            console.log(msgSuccess_api(port));
-            resolve(server);
-        });
+        let credentials;
+        let httpsMode = false;
+        try{
+            credentials = getPemCredentials();
+            httpsMode = true;
+        }
+        catch(e){
+           //se si rompe in tutta probabilità perché i file pem non esistono
+           //e tanto vale che sia il criterio per stabili di aprire la connessione in http o in https
+           //i file pem necessari possono essere creati con:
+           //openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=IT/ST=Italy/L=Rome/O=stopweb/OU=stopweb/CN="
+           //e vanno messi in $profilo/config/
+        }
+
+        let server;
+        if(httpsMode){
+            server = https.createServer(credentials, app);
+            server.listen(port, () => {
+                console.log(msgSuccess_api(port));
+                resolve(server);
+            });
+        }
+        else{
+            server = app.listen(port, () => {
+                console.log(msgSuccess_api(port));
+                resolve(server);
+            });
+        }
 
         server.on('error', (error) => {
             console.error(msgFail_api(error));
             reject(error);
         });
+
     });
 
 }
