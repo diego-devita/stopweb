@@ -52,8 +52,19 @@ function parseCookieString(cookieString) {
     return cookies;
 }
 
+function isHeaderValid(headers){
+    if(!headers || !headers['x-api-key'])
+        return false;
+    const apikey = headers['x-api-key'];
+    if (!apikey || !config.isApiKeyValid(apikey))
+        return false;
+    return true;
+}
+
 function isCookieValid(cookies){
-    if (!cookies || !cookies[AUTH_COOKIE_NAME]) {
+    if (
+        (!cookies || !cookies[AUTH_COOKIE_NAME])
+    ) {
         return false;
     }
     const authKey = cookies[AUTH_COOKIE_NAME];
@@ -164,7 +175,7 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
 
         // Middleware to check for the auth cookie
         function checkAuthCookie(req, res, next) {
-            if (!isCookieValid(req.cookies))
+            if (!isCookieValid(req.cookies) && !isHeaderValid(req.headers))
                 return res.redirect('/login');
             next();
         }
@@ -499,13 +510,9 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
             res.status(200).send('Logout successful');
         });
 
-        //accendi autenticazione solo se le validKeys sono state caricate e siamo in modalità https (Quindi i pem file sono validi)
+         //accendi autenticazione solo se le validKeys sono state caricate e siamo in modalità https (Quindi i pem file sono validi)
         if(config.validKeys !== null && httpsMode)
             app.use(checkAuthCookie);
-
-        app.get('/', showIndex);
-        app.get('/stopweb', showIndex);
-        app.get('/stopweb/api', showIndex);
 
         app.get('/stopweb/api/timbrature/:dataInizio/:dataFine', async (req, res) => {
             const { dataInizio, dataFine } = req.params;
@@ -561,6 +568,10 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
         app.get('/stopweb/api/login', async (req, res) => {
             await loginProcedure(req, res);
         });
+
+        app.get('/', showIndex);
+        app.get('/stopweb', showIndex);
+        app.get('/stopweb/api', showIndex);
 
 
         let server;
