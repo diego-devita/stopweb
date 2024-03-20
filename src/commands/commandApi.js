@@ -2,6 +2,7 @@ import { WebSocketServer, WebSocket} from 'ws'
 
 import cookieParser from 'cookie-parser';
 import https from 'https';
+import cors from 'cors';
 import compression from 'compression';
 import express from 'express';
 import configurationSingleton from '../commons/config.js';
@@ -143,7 +144,7 @@ export function startWebSocket({ port = 3080 } = {}){
     });
 }
 
-export async function startApiServer({ port = 3000 }={}){
+export async function startApiServer({ port = 3000, corsFree = true }={}){
 
     return new Promise((resolve, reject) => {
 
@@ -172,6 +173,8 @@ export async function startApiServer({ port = 3000 }={}){
         app.use(express.json());
         app.use(compression());
         app.use(cookieParser());
+        if(corsFree)
+            app.use(cors());
 
         const showIndex = async (req, res) => {
             // HTML content listing the routes
