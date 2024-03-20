@@ -183,12 +183,40 @@ export async function startApiServer({ port = 3000 }={}){
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>stopweb API Index</title>
                 <style>
+                    body{
+                        padding: 2em;
+                    }
+                    #websocket{
+                        display: flex;
+                        gap: 1em;
+                    }
                     #websocket input{
                         width: 3em;
                         margin-left: 0.25em;
+                        line-height: 2.5em;
+                        padding-left: .5em;
                     }
                     #websocket button{
-                        margin-left: 0.25em;
+                        margin-left: 2em;
+                        background: dodgerblue;
+                        border: none;
+                        padding: 0.5em 2em;
+                        color: white;
+                        border-radius: 0.4em;
+                        font-size: .9em;
+                        font-weight: 600;
+                        cursor: pointer;
+                    }
+                    #websocket button:disabled{
+                        margin-left: 2em;
+                        padding: 0.5em 2em;
+                        border-radius: 0.4em;
+                        font-size: .9em;
+                        font-weight: 600;
+                        background: revert;
+                        border: revert;
+                        color: revert;
+                        cursor: revert;
                     }
                     #output{
                         list-style: none;
@@ -196,9 +224,63 @@ export async function startApiServer({ port = 3000 }={}){
                     #output pre{
                         background: lightgray;
                         padding: 1em;
-                        border: dashed 1px;
+                        border: dashed 2px;
                         width: fit-content;
-                        min-width: 15em;
+                        min-width: 80ch;
+                    }
+                    .stopweb{
+                        background: black;
+                        color: white;
+                        font-family: monospace;
+                        padding: 0.2em 0.4em;
+                        margin-right: .5em;
+                    }
+                    ul.endpoints li a{
+                        display: block;
+                        padding: 0.5em 2em;
+                        border: solid 4px lightgoldenrodyellow;
+                        background: darkseagreen;
+                        margin-bottom: 0.5em;
+                        font-weight: 600;
+                        text-decoration: none;
+                        font-size: 1.5em;
+                    }
+                    h2{
+                        font-size: 2em;
+                        margin-bottom: 1em;
+                        text-align: center;
+                    }
+                    .hostname{
+                        padding: 0.5em 1em 0.5em 2em;
+                        border: solid;
+                        color: #555;
+                        font-weight: 600;
+                    }
+                    ul.lista {
+                        display: table;
+                        width: 1%;
+                        margin: 0 auto;
+                        padding: 0;
+                        list-style: none;
+                    }
+                    ul.lista li {
+                        display: inline-block;
+                        width: 100%;
+                        box-sizing: border-box;
+                        text-align: center;
+                    }
+                    #logout{
+                        margin-left: 0.25em;
+                        background: red;
+                        border: none;
+                        padding: 0.5em 3em;
+                        color: white;
+                        border-radius: 0.4em;
+                        font-size: .9em;
+                        font-weight: 600;
+                        cursor: pointer;
+                        line-height: 2;
+                        margin-bottom: 2em;
                     }
                 </style>
                 <script>
@@ -225,6 +307,7 @@ export async function startApiServer({ port = 3000 }={}){
                         };
                         ws.onclose = function() {
                             document.querySelector('#output pre').textContent += 'WebSocket connection closed\\n';
+                            document.getElementById('connect').disabled = false;
                         }
                     }
 
@@ -282,10 +365,14 @@ export async function startApiServer({ port = 3000 }={}){
                 </script>
             </head>
             <body>
-                <button id="logout">Logout</button>
-                <hr>
-                <h2>stopweb API Endpoints</h2>
-                <ul>
+                <div style="display: flex; justify-content: center;">
+                    <button id="logout">Logout</button>
+                </div>
+                <h2>
+                    <span class="stopweb">stopweb_</span>
+                    <span>API Endpoints</span>
+                </h2>
+                <ul class="endpoints lista">
                     <li id="api_timbrature"><a href="/stopweb/api/timbrature/[datainizio]/[datafine]">/stopweb/api/timbrature/&lt;dataInizio&gt;/&lt;dataFine&gt;</a></li>
                     <li id="api_preferiti"><a href="/stopweb/api/preferiti">/stopweb/api/preferiti</a></li>
                     <li id="api_eventi"><a href="/stopweb/api/eventi">/stopweb/api/eventi</a></li>
@@ -293,12 +380,12 @@ export async function startApiServer({ port = 3000 }={}){
                     <li id="api_eventi_update"><a href="/stopweb/api/eventi/update">/stopweb/api/eventi/update</a></li>
                     <li id="api_login"><a href="/stopweb/api/login">/stopweb/api/login</a></li>
                 </ul>
-                <h2>stopweb Events Websocket</h2>
-                <ul>
+                <h2><span class="stopweb">stopweb_</span> Events Websocket</h2>
+                <ul class="lista">
                     <li id="websocket">
                         <span class="hostname"></span>
                         <span><input type="text" value="?"></span>
-                        <button onclick="connectToGivenPort();">connect</button>
+                        <button id="connect" onclick="this.disabled = true; connectToGivenPort();">connect</button>
                     </li>
                     <li id="output">
                         <pre></pre>
@@ -344,6 +431,7 @@ export async function startApiServer({ port = 3000 }={}){
                 input[name="apiKey"]{
                     line-height: 1.5em;
                     font-size: 1em;
+                    padding: 0 0 0 1em;
                 }
                 .btn {
                     font-size: 1em;
@@ -368,18 +456,28 @@ export async function startApiServer({ port = 3000 }={}){
                     }
                 }
                 .label{
-                    margin-right: 0.5em;
+                    padding: 0.5em 1em;
+                    background: lightgoldenrodyellow;
                     border: solid 1px gray;
+                    border-right: none;
+                    font-family: monospace;
                     line-height: 1.5em;
                     font-size: 1em;
-                    padding: 0.25em 0.5em;
-                    background: lightgoldenrodyellow;
+                }
+                .stopweb{
+                    background: black;
+                    color: white;
+                    font-family: monospace;
+                    padding: 0.2em 0.4em;
                 }
             </style>
             <form method="POST" action="/login">
                 <div class="container">
-                    <h1>stopweb api</h1>
-                    <div>
+                    <h1>
+                        <span class="stopweb">stopweb_</span>
+                        <span>://api</span>
+                    </h1>
+                    <div style="display: flex;">
                         <span class="label">API Key: </span>
                         <input type="text" name="apiKey">
                     </div>
