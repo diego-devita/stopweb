@@ -221,10 +221,10 @@ export function commandGuida(){
     printIntro(maxLength);
 
     const pad = 40;
+    const padOffset = 0;//13
     console.log('');
     console.log(chalk.yellow(' Profilo:'));
     console.log();
-    const padOffset = 0;//13
     console.log(` ${chalk.dim((config.nome + ' profilo --crea [nomeprofilo]').padEnd(pad+padOffset, ' '))} per creare un profilo`);
     console.log(` ${chalk.dim((config.nome + ' profilo --lista').padEnd(pad+padOffset, ' '))} per vedere la lista`);
     console.log(` ${chalk.dim((config.nome + ' profilo --cambia [nomeprofilo]').padEnd(pad+padOffset, ' '))} per sceglierlo`);
@@ -237,6 +237,19 @@ export function commandGuida(){
     console.log(` ${chalk.dim((config.nome + ' profilo').padEnd(pad, ' '))} per conoscere lo stato della config`);
     console.log(` ${chalk.dim((config.nome + ' profilo --dettagli').padEnd(pad, ' '))}`);
     console.log(` ${chalk.dim((config.nome + ' profilo --yaml').padEnd(pad, ' '))} per conoscere validità formale yaml`);
+    console.log();
+    console.log(chalk.yellow(' Interrogazione:'));
+    console.log();
+    console.log(` ${chalk.dim((config.nome + ' login').padEnd(pad, ' '))} login sul portale presenze`);
+    console.log(` ${chalk.dim((config.nome + ' fetch --mese').padEnd(pad, ' '))} timbrature del mese`);
+    console.log(` ${chalk.dim((config.nome + ' fetch --oggi').padEnd(pad, ' '))} timbrature di oggi`);
+    console.log(` ${chalk.dim((config.nome + ' rubrica').padEnd(pad, ' '))} rubrica preferiti`);
+    console.log(` ${chalk.dim((config.nome + ' rubrica --tutti').padEnd(pad, ' '))} rubrica tutti i dip`);
+    console.log(` ${chalk.dim((config.nome + ' rubrica --presenti adesso').padEnd(pad, ' '))} rubrica di chi è ora in sede`);
+    console.log();
+    console.log(chalk.yellow(' Eventi:'));
+    console.log();
+    console.log(` ${chalk.dim((config.nome + ' eventi --listen --api --ws').padEnd(pad, ' '))} Loop infinito che cicla interrogazione`);
     console.log();
     console.log(chalk.yellow(' Condizioni:'));
     console.log();
