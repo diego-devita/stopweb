@@ -13,16 +13,17 @@ Il progetto utilizza le seguenti variabili d'ambiente:
 
 ## Per iniziare
 - Clona il repository
-```
+```bash
 git clone https://github.com/diego-devita/stopweb.git
 ```
 - Installa le dipendenze
-```
+```bash
 cd <stopweb directory>
 sudo npm install
 ```
 - Crea il symlink *stopweb* allo script entry point (./src/cli.js)
-```
+```bash
+cd <stopweb directory>
 sudo npm link
 ```
 
@@ -30,29 +31,43 @@ sudo npm link
 
 per maggiori dettagli: https://playwright.dev/docs/browsers
 
-```
+```bash
 sudo npx playwright install chromium
 
 #oppure per forzare le dipendenze
 sudo npx playwright install --with-deps chromium
 ```
 
+- Crea il certificato SSL (http api e web socket)
+
+I file certificato sono chiave pubblica e chiave privata necessarie ad abilitare il canale SSL over HTTP e WS. Se i file non esistono, SSL non è disponibile e neppure l'autenticazione a valle. I file sono: `key.pem` e `cert.pem` in `<profilo>/config/`.
+
+Per creare i certificati:
+```bash
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=IT/ST=Italy/L=Rome/O=stopweb/OU=stopweb/CN="
+```
+
+- Crea un file con le API KEYS (http api e web socket)
+
+Il file `<profilo>/config/validapikeys` è un array di stringhe serializzato in JSON. Tutte le stringhe che contiene sono chiavi valide per l'autenticazione nel portale api e per la connessione con il web socket. Se il file non esiste o non è deserializzabile, l'autenticazione è spenta.
+
+
 ## Creare la configurazione profilo
 
 - Inizializzare la configurazione del profilo corrente
-```
+```bash
 stopweb profilo --init
 ```
 - Impostare le api url usando il proprio sito aziendale
-```
+```bash
 stopweb profilo --seturls <nomesito>
 ```
 - Consultare le condizioni di utilizzo
-```
+```bash
 stopweb condizioni
 ```
 - Accettare le condizioni di utilizzo
-```
+```bash
 stopweb condizioni --accetta
 ```
 ## License and Attributions
