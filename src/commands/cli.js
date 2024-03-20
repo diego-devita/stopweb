@@ -488,5 +488,5 @@ function handleError(error){
         console.error(errorMessage);
     }
     //in sviluppo scommentare la prossima riga per vedere gli errori a schermo
-    throw error;
+    //throw error;
 }
