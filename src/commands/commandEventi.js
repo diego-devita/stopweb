@@ -165,7 +165,7 @@ export async function listen({
 
     //console.log('-'.repeat(45));
     console.log(style.white('-'.repeat(78)));
-    console.log(style.stress(` [stopweb v.`) + style.dim(config.version) + style.stress(']') + style.dim(' - Ascolto degli eventi'));
+    console.log((` [stopweb v.`) + style.stress(config.version) + (']') + (' - Ascolto degli eventi'));
     console.log(style.white('-'.repeat(78)));
     console.log(style.dim(` delaySeconds: ${delayInSeconds}`));
     console.log(style.dim(` randomOffsetRange: ${randomOffsetRange}`));
@@ -270,6 +270,8 @@ async function aggiornaStato(){
     }
 
     function processGiornataDataForEvents(today, giornate){
+        if (!Object.keys(giornate).includes(today))
+            return;
         const giornata = giornate[today];
         const timbrature =
             giornata.aspettativa?.uscita?.hhmm + ' [' + giornata.timbrature.map( t => t.versoU1 + t.hhmm).join(' ') + ']';

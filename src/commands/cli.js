@@ -259,18 +259,19 @@ switch (args.command) {
         let add = (args.options.add?.length > 0);
         let remove = (args.options.remove?.length > 0);
 
-        if(args.options.orari === true){
-            if(args.options.json === true)
-                await commandGetOrari({ asJson: true });
-            else
-                await commandGetOrari();
-            process.exit();
-        }
-
         if(list === false && add === false && remove === false)
             list = true;
 
         try{
+
+            if(args.options.orari === true){
+                if(args.options.json === true)
+                    await commandGetOrari({ asJson: true });
+                else
+                    await commandGetOrari();
+                process.exit();
+            }
+
             //se --list esiste (ha la priorità)
             if(list)
                 await commandGetPreferitiDipendenti({ showTotal: showPreferitiTotal, asJson: json });
@@ -386,32 +387,49 @@ switch (args.command) {
 
         async function lanciaServer({api = false, ws = false} = {}){
 
+            const msgSuccess_auth = chalk.green(` ●  L'autenticazione è accesa rispetto alle API keys valide`);
+            const msgFail_auth = chalk.red(` ●  L'autenticazione è spenta!\n`) + '    Verificare i file: ' + chalk.yellow('validapikeys') + ', ' + chalk.yellow('key.pem') + ' e ' + chalk.yellow('cert.pem') + ' su ' + chalk.yellow('<profilo>/config/');
+            const msgSuccess2_auth = chalk.green(' ●  L\'autenticazione è accesa!\n') + '    Ma la login non è disponibile.. solo cookie preimpostati';
+
             if(!api && !ws)
                 return;
 
             console.log('------------------------------------------------------------------------------');
+            let esitoApi;
             if(api){
                 if(api === true){
-                    await lanciaApi(3000);
+                    esitoApi = await lanciaApi(3000);
                 }else{
                     const port = parseInt(args.options.api);
-                    await lanciaApi(port);
+                    esitoApi = await lanciaApi(port);
                 }
             }
+            let esitoWS;
             if(ws){
                 if(ws === true){
-                    await lanciaWebSocket(3080);
+                    esitoWS = await lanciaWebSocket(3080);
                 }else{
                     const port = parseInt(ws);
-                    await lanciaWebSocket(port);
+                    esitoWS = await lanciaWebSocket(port);
                 }
             }
+
+            const esito = (esitoApi) ? esitoApi : esitoWS;
+
+            if (esito.auth && esito.https)
+                if(!api)
+                    console.log(msgSuccess2_auth)
+                else
+                    console.log(msgSuccess_auth);
+            else
+                console.log(msgFail_auth);
         }
 
 
         async function lanciaApi(port){
             try{
-                const apiServer = await startApiServer({ port });
+                const esito = await startApiServer({ port });
+                return esito;
                 //console.log(chalk.green(`api json attive - visitare http://localhost:${port}/stopweb/api/ per i dettagli`));
             }catch(e){
                 process.exit(1);
@@ -421,7 +439,8 @@ switch (args.command) {
 
         async function lanciaWebSocket(port){
             try{
-                const ws = await startWebSocket({ port });
+                const esito = await startWebSocket({ port });
+                return esito;
                 //console.log(chalk.green(`websocket eventi attivo - aprire una connessione con ws://localhost:${port}/ per gli eventi`));
             }
             catch(e){
@@ -469,5 +488,5 @@ function handleError(error){
         console.error(errorMessage);
     }
     //in sviluppo scommentare la prossima riga per vedere gli errori a schermo
-    //throw error;
+    throw error;
 }

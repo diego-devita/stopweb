@@ -1,5 +1,6 @@
 import { WebSocketServer, WebSocket} from 'ws'
 
+import cookieParser from 'cookie-parser';
 import https from 'https';
 import compression from 'compression';
 import express from 'express';
@@ -19,10 +20,12 @@ import fs from 'fs';
 const config = configurationSingleton.getInstance();
 const events = eventEmitterSingleton.getInstance();
 
-const msgSuccess_api = (port) => chalk.green(` API Server in ascolto sulla porta ${port} - https://localhost:${port}/stopweb/api`);
-const msgFail_api = (error) => chalk.red(` Errore durante l'avvio dell'API Server: ${error.message}`);
-const msgSuccess_ws = (port) => chalk.green(` WebSocket in ascolto sulla porta ${port} - ws://localhost:${port}`);
-const msgFail_ws = (error) => chalk.red(` Si è verificato un errore con il server WebSocket: ${error.message}`);
+const msgSuccess_api = (port, schema) => /*🟢*/chalk.green(' ●  API Server in ascolto ') + chalk.yellow(schema) + (`://localhost:${chalk.yellow(port)}/stopweb/api`) ;
+const msgFail_api = (error) => /*🔴*/chalk.red(` ●  Errore durante l'avvio dell'API Server: ${error.message}`);
+const msgSuccess_ws = (port, schema) => chalk.green(' ●  WebSocket in ascolto ') + chalk.yellow(schema) + `://localhost:${chalk.yellow(port)}`;
+const msgFail_ws = (error) => chalk.red(` ●  Si è verificato un errore con il server WebSocket: ${error.message}`);
+
+const AUTH_COOKIE_NAME = 'auth_key';
 
 function getPemCredentials(){
 
@@ -34,6 +37,29 @@ function getPemCredentials(){
     const certificate = fs.readFileSync(certificatePath, 'utf8');
 
     return  { key: privateKey, cert: certificate };
+}
+
+function parseCookieString(cookieString) {
+    const cookies = {};
+    if (cookieString) {
+        const individualCookieStrings = cookieString.split('; ');
+        individualCookieStrings.forEach(cookie => {
+            const [key, value] = cookie.split('=');
+            cookies[key] = decodeURIComponent(value);
+        });
+    }
+    return cookies;
+}
+
+function isCookieValid(cookies){
+    if (!cookies || !cookies[AUTH_COOKIE_NAME]) {
+        return false;
+    }
+    const authKey = cookies[AUTH_COOKIE_NAME];
+    if (!authKey || !config.isApiKeyValid(authKey)) {
+        return false;
+    }
+    return true;
 }
 
 export function startWebSocket({ port = 3080 } = {}){
@@ -57,17 +83,31 @@ export function startWebSocket({ port = 3080 } = {}){
         let wss;
         if(httpsMode){
             server = https.createServer(credentials);
-            wss = new WebSocketServer({ server });
+
+            wss = new WebSocketServer({  noServer: true });
+
+            server.on('upgrade', function(request, socket, head) {
+                const cookies = request.headers.cookie;
+                const parseCookies = parseCookieString(cookies);
+                if (!isCookieValid(parseCookies)) {
+                    socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+                    socket.destroy();
+                    return;
+                }
+                wss.handleUpgrade(request, socket, head, function(ws) {
+                    wss.emit('connection', ws, request);
+                });
+            });
 
             server.listen(port, () => {
-                console.log(msgSuccess_ws(port));
-                resolve(wss);
+                console.log(msgSuccess_ws(port, 'wss'));
+                resolve({ server: wss, https: true, auth: true });
             });
         }
         else{
             wss = new WebSocketServer({ port }, () => {
-                console.log(msgSuccess_ws(port));
-                resolve(wss);
+                console.log(msgSuccess_ws(port, 'ws'));
+                resolve({ server: wss, https: false, auth: false });
             });
         }
 
@@ -106,9 +146,32 @@ export function startWebSocket({ port = 3080 } = {}){
 export async function startApiServer({ port = 3000 }={}){
 
     return new Promise((resolve, reject) => {
+
+        let credentials;
+        let httpsMode = false;
+        try{
+            credentials = getPemCredentials();
+            httpsMode = true;
+        }
+        catch(e){
+           //se si rompe in tutta probabilità perché i file pem non esistono
+           //e tanto vale che sia il criterio per stabili di aprire la connessione in http o in https
+           //i file pem necessari possono essere creati con:
+           //openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=IT/ST=Italy/L=Rome/O=stopweb/OU=stopweb/CN="
+           //e vanno messi in $profilo/config/
+        }
+
+        // Middleware to check for the auth cookie
+        function checkAuthCookie(req, res, next) {
+            if (!isCookieValid(req.cookies))
+                return res.redirect('/login');
+            next();
+        }
+
         const app = express();
         app.use(express.json());
         app.use(compression());
+        app.use(cookieParser());
 
         const showIndex = async (req, res) => {
             // HTML content listing the routes
@@ -189,15 +252,38 @@ export async function startApiServer({ port = 3000 }={}){
                         li.querySelector('a').href = url;
                     }
 
+                    async function logout() {
+                        try {
+                            const response = await fetch('/logout', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json',},
+                            });
+
+                            if (response.ok) {
+                                window.location.href = '/login';
+                            } else {
+                                //console.error('Logout failed.');
+                            }
+                        } catch (error) {
+                            //console.error('There was a problem with the logout request:', error);
+                        }
+                    }
+
                     document.addEventListener('DOMContentLoaded',()=>{
                         replacePlaceholders();
                         const wsUrl = getWebSocketURL('');
                         document.querySelector('#websocket .hostname').textContent = wsUrl;
+                        document.getElementById('logout')
+                            .addEventListener('click', ()=>{
+                                logout();
+                            });
                     });
 
                 </script>
             </head>
             <body>
+                <button id="logout">Logout</button>
+                <hr>
                 <h2>stopweb API Endpoints</h2>
                 <ul>
                     <li id="api_timbrature"><a href="/stopweb/api/timbrature/[datainizio]/[datafine]">/stopweb/api/timbrature/&lt;dataInizio&gt;/&lt;dataFine&gt;</a></li>
@@ -225,6 +311,96 @@ export async function startApiServer({ port = 3000 }={}){
             // Send the HTML content as the response
             res.send(htmlContent);
         }
+
+        // Route to handle login form submission
+        app.post('/login', express.urlencoded({ extended: true }), (req, res) => {
+            const { apiKey } = req.body;
+            if (config.isApiKeyValid(apiKey)) {
+                // Set the cookie with the API key if it's valid
+                res.cookie(AUTH_COOKIE_NAME, apiKey, { httpOnly: true, secure: true }); // Add 'secure: true' in production
+                return res.redirect('/'); // Redirect to the home page or wherever appropriate
+            }
+            res.status(401).send('Invalid API Key');
+        });
+        // Route to serve the login page
+        app.get('/login', (req, res) => {
+            // Simplified HTML form for API key submission
+            const htmlContent = `
+            <style>
+                .container {
+                    font-size: 1.5em;
+                    display: flex;
+                    align-items: center;
+                    height: 100vh;
+                    justify-content: center;
+                    gap: 1em;
+                    flex-wrap: wrap;
+                    flex-direction: column;
+                }
+                h1{
+                    width: 100%;
+                    text-align: center;
+                }
+                input[name="apiKey"]{
+                    line-height: 1.5em;
+                    font-size: 1em;
+                }
+                .btn {
+                    font-size: 1em;
+                    /*font-size: 16px;*/
+                    cursor: pointer;
+                    outline: 0;
+                    color: #fff;
+                    background-color: #0d6efd;
+                    border-color: #0d6efd;
+                    display: inline-block;
+                    font-weight: 400;
+                    line-height: 1.5;
+                    text-align: center;
+                    border: 1px solid transparent;
+                    border-radius: .25rem;
+                    padding: 0.2em 2em;
+                    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+                    :hover {
+                        color: #fff;
+                        background-color: #0b5ed7;
+                        border-color: #0a58ca;
+                    }
+                }
+                .label{
+                    margin-right: 0.5em;
+                    border: solid 1px gray;
+                    line-height: 1.5em;
+                    font-size: 1em;
+                    padding: 0.25em 0.5em;
+                    background: lightgoldenrodyellow;
+                }
+            </style>
+            <form method="POST" action="/login">
+                <div class="container">
+                    <h1>stopweb api</h1>
+                    <div>
+                        <span class="label">API Key: </span>
+                        <input type="text" name="apiKey">
+                    </div>
+                    <input class="btn" type="submit" value="Login">
+                </div>
+            </form>
+            `;
+
+            res.send(htmlContent);
+        });
+        app.post('/logout', (req, res) => {
+            // Imposta il cookie per scadere immediatamente
+            res.cookie('auth_key', '', { expires: new Date(0), path: '/', httpOnly: true, secure: true });
+
+            // Puoi anche inviare una risposta per confermare il logout
+            res.status(200).send('Logout successful');
+        });
+
+        //accendi autenticazione solo se le validKeys sono state caricate e siamo in modalità https (Quindi i pem file sono validi)
+        if(config.validKeys !== null && httpsMode)
+            app.use(checkAuthCookie);
 
         app.get('/', showIndex);
         app.get('/stopweb', showIndex);
@@ -285,32 +461,19 @@ export async function startApiServer({ port = 3000 }={}){
             await loginProcedure(req, res);
         });
 
-        let credentials;
-        let httpsMode = false;
-        try{
-            credentials = getPemCredentials();
-            httpsMode = true;
-        }
-        catch(e){
-           //se si rompe in tutta probabilità perché i file pem non esistono
-           //e tanto vale che sia il criterio per stabili di aprire la connessione in http o in https
-           //i file pem necessari possono essere creati con:
-           //openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=IT/ST=Italy/L=Rome/O=stopweb/OU=stopweb/CN="
-           //e vanno messi in $profilo/config/
-        }
 
         let server;
         if(httpsMode){
             server = https.createServer(credentials, app);
             server.listen(port, () => {
-                console.log(msgSuccess_api(port));
-                resolve(server);
+                console.log(msgSuccess_api(port, 'https'));
+                resolve({ server, https: true, auth: config.validKeys !== null});
             });
         }
         else{
             server = app.listen(port, () => {
-                console.log(msgSuccess_api(port));
-                resolve(server);
+                console.log(msgSuccess_api(port, 'http'));
+                resolve({ server, https: false, auth: false });
             });
         }
 

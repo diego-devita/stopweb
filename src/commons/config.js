@@ -209,6 +209,7 @@ class Config {
             this._config = this.loaded.data;
 
             this.loadStatoEventi();
+            this.loadValidKeys();
 
             Config.instance = this;
         }
@@ -333,6 +334,28 @@ class Config {
         return this.extra[key];
     }
 
+    isApiKeyValid(apikey){
+        //se il load delle validkeys è fallito (perché il file non esiste o il parse fallisce)
+        if(this.validKeys === null)
+            //la chiave è sempre valida perché l'autenticazione è spenta
+            return true;
+        return this.validKeys.includes(apikey);
+    }
+
+    loadValidKeys(){
+        const configdir = this.getConfigDir();
+        const validkeysFile = path.join(configdir, 'validapikeys');
+        let validKeys = null;
+        if(fs.existsSync(validkeysFile)){
+            const content = fs.readFileSync(validkeysFile, 'utf-8');
+            try{
+                validKeys = JSON.parse(content);
+            }
+            catch(e){
+            }
+        }
+        this.validKeys = validKeys;
+    }
 
     isKeyOnFile(key){
         if (key in this._config)
