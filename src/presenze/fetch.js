@@ -58,7 +58,7 @@ export async function fetchGiornateCartellinoRAW(idDipendente, cookieHeader, dat
         originalData = await fetchCartellino(idDipendente, cookieHeader, dataInizio, dataFine);
 
     if(BUILD_MOCK)
-        fs.writeFileSync(MOCK_FILE, JSON.stringify(jsonData, null, 2));
+        fs.writeFileSync(MOCK_FILE, JSON.stringify(originalData, null, 2));
 
     return await originalData.json();
 }
