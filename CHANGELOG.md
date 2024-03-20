@@ -4,6 +4,11 @@ Tutte le modifiche significative a questo progetto verranno documentate in quest
 
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), e questo progetto aderisce a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2024-03-20
+
+### Added
+- Il server api http e il web socket supportano autenticazione (se esiste file config/validapikeys e config/cert.pem e key.pem)
+
 ## [2.0.0] - 2024-03-19
 
 ### Added
