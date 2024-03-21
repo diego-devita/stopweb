@@ -11,8 +11,7 @@ import readline from 'readline';
 import fs from 'fs';
 
 const config = configurationSingleton.getInstance();
-
-let websocket;
+const events = eventEmitterSingleton.getInstance();
 
 const style = {};
 
@@ -180,6 +179,8 @@ export async function listen({
 
     while (true) {
 
+        events.emit('process.update.begin', { n: interrogazioni /*già fatte con successo*/, f: fallimenti /*già fatte fallite*/, e: prevEventiCount /*eventi so far in coda*/});
+
         let noerror = true;
         let newlines = 0;
         try{
@@ -188,6 +189,7 @@ export async function listen({
             //e se va storto dopo a timbrature, ci sono 2 linee senza a capo
             await aggiornaStato();
             newlines = 2;
+            events.emit('process.update.done', { n: interrogazioni, f: fallimenti, e: prevEventiCount });
         }
         catch(e){
             //modo buzzurro di capire se si è fermato al primo o al secondo step
@@ -197,6 +199,7 @@ export async function listen({
             }
             noerror = false;
             //se è scaduta la login, l'aggiornamento dello stato può accusare
+            events.emit('process.update.error', { n: interrogazioni, f: fallimenti, e: prevEventiCount });
         }
 
         //se non ci sono stati errori
@@ -229,6 +232,8 @@ export async function listen({
         let nextDelayInSeconds = delayInSeconds + offsetInSeconds;
         //30 sec minimo di sicurezza
         nextDelayInSeconds = Math.max(30, nextDelayInSeconds);
+
+        events.emit('process.update.next', { delay: delayInSeconds, random: offsetInSeconds, total: nextDelayInSeconds});
 
         //ma verifica prima che l'ora attuale non ricada nella finestra di timeout (19pm-7am)
         //questa cosa sarebbe da parametrizzare in config

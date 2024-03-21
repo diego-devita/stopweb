@@ -131,21 +131,31 @@ export function startWebSocket({ port = 3080 } = {}){
         wss.on('connection', function connection(ws) {
             function attachEvents(websocket){
 
-                function forwardEventToWebSocket(event){
+                function forwardEventToWebSocket(name, event){
                     if(!websocket)
                         return;
                     const dataString = JSON.stringify(event);
-                    websocket.send(dataString);
+                    websocket.send(name + dataString);
                 }
 
-                events.on('eventi.timbrature.nuovoGiorno', forwardEventToWebSocket);
-                events.on('eventi.timbrature.variazione', forwardEventToWebSocket);
-                events.on('eventi.preferiti.dipendente.nuovo', forwardEventToWebSocket);
-                events.on('eventi.preferiti.dipendente.reset', forwardEventToWebSocket);
-                events.on('eventi.preferiti.stato.variazione', forwardEventToWebSocket);
-                events.on('eventi.preferiti.giustificativo.oggi.variazioneDaIeri', forwardEventToWebSocket);
-                events.on('eventi.preferiti.giustificativo.oggi.variazioneDaOggi', forwardEventToWebSocket);
-                events.on('eventi.preferiti.giustificativo.domani.variazioneDaOggi', forwardEventToWebSocket);
+                const keepTracksOfEvents = [
+                    'process.update.begin',
+                    'process.update.done',
+                    'process.update.error',
+                    'process.update.next',
+                    'eventi.timbrature.nuovoGiorno',
+                    'eventi.timbrature.variazione',
+                    'eventi.preferiti.dipendente.nuovo',
+                    'eventi.preferiti.dipendente.reset',
+                    'eventi.preferiti.stato.variazione',
+                    'eventi.preferiti.giustificativo.oggi.variazioneDaIeri',
+                    'eventi.preferiti.giustificativo.oggi.variazioneDaOggi',
+                    'eventi.preferiti.giustificativo.domani.variazioneDaOggi',
+                ];
+
+                keepTracksOfEvents.forEach( eventName => {
+                    events.on(eventName, (event)=>{ forwardEventToWebSocket(eventName, event) });
+                });
             }
             attachEvents(ws);
         });
@@ -249,15 +259,29 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
                         padding: 0.2em 0.4em;
                         margin-right: .5em;
                     }
-                    ul.endpoints li a{
+                    ul.endpoints li{
+                        position: relative;
                         display: block;
                         padding: 0.5em 2em;
                         border: solid 4px lightgoldenrodyellow;
                         background: darkseagreen;
                         margin-bottom: 0.5em;
+                    }
+                    ul.endpoints li a{
                         font-weight: 600;
                         text-decoration: none;
                         font-size: 1.5em;
+                    }
+                    ul.endpoints li button.fetch{
+                        position: absolute;
+                        right: -4em;
+                        bottom: 0;
+                        width: 3.5em;
+                        height: 3.25em;
+                        cursor: pointer;
+                        display: fleX;
+                        align-items: center;
+                        justify-content: center;
                     }
                     h2{
                         font-size: 2em;
@@ -296,6 +320,18 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
                         line-height: 2;
                         margin-bottom: 2em;
                     }
+                    .loader {
+                        border: 4px solid #f3f3f3; /* Sfondo chiaro */
+                        border-top: 4px solid #3498db; /* Colore bordo (Blu) */
+                        border-radius: 50%;
+                        width: 20px;
+                        height: 20px;
+                        animation: spin 2s linear infinite;
+                    }
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
                 </style>
                 <script>
 
@@ -311,17 +347,31 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
                         var ws = new WebSocket(url);
 
                         ws.onopen = function() {
-                            document.querySelector('#output pre').textContent += 'WebSocket connection established\\n';
+                            document.querySelector('#output pre').innerHTML += '<strong style="color:green;">WebSocket connection established</strong>\\n';
                         };
                         ws.onmessage = function(event) {
-                            document.querySelector('#output pre').textContent += 'Message from server:\\n' + event.data + '\\n';
+                            const d = new Date();
+                            const timestamp = d.getDate().toString().padStart(2,'0') + '/' + (d.getMonth()+1).toString().padStart(2,'0') + '/' + d.getFullYear() + ' ' + d.getHours().toString().padStart(2,'0') + '.' + d.getMinutes().toString().padStart(2,'0') + '.' + d.getSeconds().toString().padStart(2,'0');
+                            document.querySelector('#output pre').innerHTML += '<strong>[' + timestamp +']</strong>\\n' + event.data + '\\n';
                         };
                         ws.onerror = function(error) {
-                            document.querySelector('#output pre').textContent += 'WebSocket error:\\n' + error + '\\n';
+                            document.querySelector('#output pre').innerHTML += '<strong style="color:red;">WebSocket error:</strong>\\n' + error + '\\n';
                         };
                         ws.onclose = function() {
-                            document.querySelector('#output pre').textContent += 'WebSocket connection closed\\n';
+                            document.querySelector('#output pre').innerHTML += '<strong style="color:red;">WebSocket connection closed</strong>\\n';
                             document.getElementById('connect').disabled = false;
+                        }
+                    }
+
+                    async function fetchFromApi({ url, apikey } = {}) {
+                        try{
+                            const options = { method: 'GET', headers: { 'x-api-key': apikey } };
+                            const response = await fetch(url, options);
+                            const data = await response.json();
+                            return data;
+                        } catch (error) {
+                            console.error('Errore durante il fetch:', error);
+                            throw error;
                         }
                     }
 
@@ -366,6 +416,46 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
                         }
                     }
 
+                    function addFetchButtons(){
+
+                        document.querySelectorAll('.endpoints li.fetch_enabled')
+                            .forEach( li => {
+                                const btn = \`
+                                    <button class="fetch">
+                                        <svg fill="green" version="1.1"" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 58.752 58.752" xml:space="preserve">
+                                            <g>
+                                                <path d="M52.524,23.925L12.507,0.824c-1.907-1.1-4.376-1.097-6.276,0C4.293,1.94,3.088,4.025,3.088,6.264v46.205
+                                                    c0,2.24,1.204,4.325,3.131,5.435c0.953,0.555,2.042,0.848,3.149,0.848c1.104,0,2.192-0.292,3.141-0.843l40.017-23.103
+                                                    c1.936-1.119,3.138-3.203,3.138-5.439C55.663,27.134,54.462,25.05,52.524,23.925z M49.524,29.612L9.504,52.716
+                                                    c-0.082,0.047-0.18,0.052-0.279-0.005c-0.084-0.049-0.137-0.142-0.137-0.242V6.263c0-0.1,0.052-0.192,0.14-0.243
+                                                    c0.042-0.025,0.09-0.038,0.139-0.038c0.051,0,0.099,0.013,0.142,0.038l40.01,23.098c0.089,0.052,0.145,0.147,0.145,0.249
+                                                    C49.663,29.47,49.611,29.561,49.524,29.612z"/>
+                                            </g>
+                                        </svg>
+                                        <div class="spinner" style="display: none;">
+                                            <div class="loader"></div>
+                                        </div>
+                                    </button>
+                                \`;
+                                li.insertAdjacentHTML('beforeend', btn);
+                            });
+
+                        document.querySelectorAll('.endpoints li.fetch_enabled')
+                            .forEach( li => {
+                                const anchor = li.querySelector('a');
+                                const fetchBtn = li.querySelector('button.fetch');
+                                fetchBtn.dataset.url = anchor.href;
+                                fetchBtn.addEventListener('click', async (event) => {
+                                    const btn = event.currentTarget;
+                                    const url = btn.dataset.url;
+                                    btn.querySelector('.spinner').style.display = 'block';
+                                    const result = await fetchFromApi({ url });
+                                    btn.querySelector('.spinner').style.display = 'none';
+                                    console.log(result);
+                                });
+                            });
+                    }
+
                     document.addEventListener('DOMContentLoaded',()=>{
                         replacePlaceholders();
                         const wsUrl = getWebSocketURL('');
@@ -374,6 +464,7 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
                             .addEventListener('click', ()=>{
                                 logout();
                             });
+                        addFetchButtons();
                     });
 
                 </script>
@@ -387,12 +478,24 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
                     <span>API Endpoints</span>
                 </h2>
                 <ul class="endpoints lista">
-                    <li id="api_timbrature"><a href="/stopweb/api/timbrature/[datainizio]/[datafine]">/stopweb/api/timbrature/&lt;dataInizio&gt;/&lt;dataFine&gt;</a></li>
-                    <li id="api_preferiti"><a href="/stopweb/api/preferiti">/stopweb/api/preferiti</a></li>
-                    <li id="api_eventi"><a href="/stopweb/api/eventi">/stopweb/api/eventi</a></li>
-                    <li id="api_eventi_stato"><a href="/stopweb/api/eventi/stato">/stopweb/api/eventi/stato</a></li>
-                    <li id="api_eventi_update"><a href="/stopweb/api/eventi/update">/stopweb/api/eventi/update</a></li>
-                    <li id="api_login"><a href="/stopweb/api/login">/stopweb/api/login</a></li>
+                    <li id="api_timbrature" class="fetch_enabled">
+                        <a href="/stopweb/api/timbrature/[datainizio]/[datafine]" target="_blank">/stopweb/api/timbrature/&lt;dataInizio&gt;/&lt;dataFine&gt;</a>
+                    </li>
+                    <li id="api_preferiti" class="fetch_enabled">
+                        <a href="/stopweb/api/preferiti" target="_blank">/stopweb/api/preferiti</a>
+                    </li>
+                    <li id="api_eventi" class="fetch_enabled">
+                        <a href="/stopweb/api/eventi" target="_blank">/stopweb/api/eventi</a>
+                    </li>
+                    <li id="api_eventi_stato" class="fetch_enabled">
+                        <a href="/stopweb/api/eventi/stato" target="_blank">/stopweb/api/eventi/stato</a>
+                    </li>
+                    <li id="api_eventi_update" class="fetch_enabled">
+                        <a href="/stopweb/api/eventi/update" target="_blank">/stopweb/api/eventi/update</a>
+                    </li>
+                    <li id="api_login">
+                        <a href="/stopweb/api/login" target="_blank">/stopweb/api/login</a>
+                    </li>
                 </ul>
                 <h2><span class="stopweb">stopweb_</span> Events Websocket</h2>
                 <ul class="lista">
