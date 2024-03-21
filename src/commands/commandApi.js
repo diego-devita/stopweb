@@ -392,8 +392,14 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
                     }
 
                     function replacePlaceholders(){
-                        const li = document.getElementById('api_timbrature');
+                        let li = document.getElementById('api_timbrature');
                         let url = li.querySelector('a').href;
+                        url = url.replace('[datainizio]', getTodayAsYYYYMMDD());
+                        url = url.replace('[datafine]', getTodayAsYYYYMMDD());
+                        li.querySelector('a').href = url;
+
+                        li = document.getElementById('api_report');
+                        url = li.querySelector('a').href;
                         url = url.replace('[datainizio]', getTodayAsYYYYMMDD());
                         url = url.replace('[datafine]', getTodayAsYYYYMMDD());
                         li.querySelector('a').href = url;
