@@ -8,7 +8,7 @@ import express from 'express';
 import configurationSingleton from '../commons/config.js';
 import eventEmitterSingleton from '../commons/eventEmitter.js';
 
-import { fetchGiornateCartellinoRAW } from '../presenze/fetch.js';
+import { fetchGiornateCartellinoRAW, fetchGiornateCartellino } from '../presenze/fetch.js';
 import { fetchRubrica } from '../presenze/rubrica.js';
 import { commandLogin } from './commandLogin.js';
 
@@ -481,6 +481,9 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
                     <li id="api_timbrature" class="fetch_enabled">
                         <a href="/stopweb/api/timbrature/[datainizio]/[datafine]" target="_blank">/stopweb/api/timbrature/&lt;dataInizio&gt;/&lt;dataFine&gt;</a>
                     </li>
+                    <li id="api_report" class="fetch_enabled">
+                        <a href="/stopweb/api/report/[datainizio]/[datafine]" target="_blank">/stopweb/api/report/&lt;dataInizio&gt;/&lt;dataFine&gt;</a>
+                    </li>
                     <li id="api_preferiti" class="fetch_enabled">
                         <a href="/stopweb/api/preferiti" target="_blank">/stopweb/api/preferiti</a>
                     </li>
@@ -628,6 +631,17 @@ export async function startApiServer({ port = 3000, corsFree = true }={}){
             res.json({ json });
         });
 
+        app.get('/stopweb/api/report/:dataInizio/:dataFine', async (req, res) => {
+            const { dataInizio, dataFine } = req.params;
+            let json = {error: 'error'};
+            try{
+                json = await apiReport({ dataInizio, dataFine });
+            }catch(e){
+                //login scaduta in tutta probabilità
+            }
+            res.json({ json });
+        });
+
         app.get('/stopweb/api/preferiti', async (req, res) => {
             let json = {error: 'error'};
             try{
@@ -712,6 +726,11 @@ async function apiPreferiti(){
 
 async function apiTimbrature({ dataInizio, dataFine } = {}){
     const json = await fetchGiornateCartellinoRAW(config.idDipendente, config.cookieHeader, dataInizio, dataFine);
+    return json;
+}
+
+async function apiReport({ dataInizio, dataFine } = {}){
+    const json = await fetchGiornateCartellino(config.idDipendente, config.cookieHeader, dataInizio, dataFine);
     return json;
 }
 
