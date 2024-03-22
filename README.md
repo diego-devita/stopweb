@@ -1,5 +1,7 @@
 # Stopweb (CLI)
 
+![Alt text for the GIF](assets/usage01.gif)
+
 ## Variabili d'ambiente
 Il progetto utilizza le seguenti variabili d'ambiente:
 
