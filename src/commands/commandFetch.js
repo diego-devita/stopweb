@@ -172,7 +172,11 @@ function printGiornateTab({
 
     for(const dataDelGiorno in giornate){
         const giornata = giornate[dataDelGiorno];
-        addGiornataToGrid(grid, giornata);
+        try{
+            addGiornataToGrid(grid, giornata);
+        }catch(e){
+            //giornata storta
+        }
     }
 
     const gridFormatter = createFormatter({

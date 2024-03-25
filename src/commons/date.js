@@ -150,7 +150,7 @@ export function addFormatterPartsToDate(dataTimbratura){
     dataTimbratura.parts['en-US'] = formatParts(dataTimbratura.date, 'en-US');
 }
 
-export function valutaDate({dataInizio, dataFine, oggi, ieri, mese, anno, daOggiMeno, data} = {}){
+export function valutaDate({dataInizio, dataFine, oggi, ieri, settimana, mese, anno, daOggiMeno, data} = {}){
 
     const getFirstDayAndLastDayOfMonth = (monthAsNumber, yearAsYYYY = new Date().getFullYear())=>{
         // Nota: monthAsNumber dovrebbe essere nel range 1-12
@@ -292,6 +292,53 @@ export function valutaDate({dataInizio, dataFine, oggi, ieri, mese, anno, daOggi
         }
     }
 
+    function getWeekInterval(year, month, weekNumber, cutoff) {
+        // Convert month to JavaScript month index (0-based)
+        const monthIndex = month - 1;
+        const firstOfMonth = new Date(year, monthIndex, 1);
+        const lastOfMonth = new Date(year, monthIndex + 1, 0);
+
+        // Get the day of the week for the first of the month (0=Sunday, 6=Saturday), then adjust to Monday-based (1=Monday, 7=Sunday)
+        let firstOfMonthDayOfWeek = firstOfMonth.getDay();
+        firstOfMonthDayOfWeek = firstOfMonthDayOfWeek === 0 ? 7 : firstOfMonthDayOfWeek;
+
+        // Calculate the start date of the target week
+        let weekStart = new Date(firstOfMonth);
+        weekStart.setDate(firstOfMonth.getDate() + (weekNumber - 1) * 7 - (firstOfMonthDayOfWeek - 1));
+
+        // Adjust the start date based on the cutoff flag
+        if (cutoff && weekStart < firstOfMonth) {
+            weekStart = new Date(firstOfMonth);
+        }
+
+        // Calculate the end date of the week
+        let weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+
+        // Adjust the end date based on the cutoff flag
+        if (cutoff && weekEnd > lastOfMonth) {
+            weekEnd = new Date(lastOfMonth);
+        }
+
+        // Ensure the week doesn't extend into the next month without cutoff
+        if (!cutoff) {
+            if (weekStart.getMonth() < monthIndex) {
+                weekStart = new Date(firstOfMonth);
+            }
+            if (weekEnd.getMonth() > monthIndex) {
+                weekEnd = new Date(lastOfMonth);
+            }
+        }
+
+        // Format the dates as 'YYYYMMDD'
+        const format = (date) => `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
+
+        return {
+            begin: format(weekStart),
+            end: format(weekEnd)
+        };
+    }
+
     if(mese !== true)
         mese = parseInt(mese);
 
@@ -307,14 +354,27 @@ export function valutaDate({dataInizio, dataFine, oggi, ieri, mese, anno, daOggi
     }
     else if(mese === true){
         const m = parseInt(getCurrentMonthAsMM());
-        const o = getFirstDayAndLastDayOfMonth(m, anno);
-        dataInizio = o.firstDay;
-        dataFine = o.lastDay;
+        if(settimana){
+            const interval = getWeekInterval(new Date().getFullYear(), m, parseInt(settimana), false);
+            dataInizio = interval.begin;
+            dataFine = interval.end;
+        }else{
+            const o = getFirstDayAndLastDayOfMonth(m, anno);
+            dataInizio = o.firstDay;
+            dataFine = o.lastDay;
+        }
     }
     else if(mese >= 1 && mese <= 12){
-        const o = getFirstDayAndLastDayOfMonth(mese, anno);
-        dataInizio = o.firstDay;
-        dataFine = o.lastDay;
+        if(settimana){
+            const interval = getWeekInterval(new Date().getFullYear(), mese, settimana, true);
+            dataInizio = interval.begin;
+            dataFine = interval.end;
+        }
+        else{
+            const o = getFirstDayAndLastDayOfMonth(mese, anno);
+            dataInizio = o.firstDay;
+            dataFine = o.lastDay;
+        }
     }
     else if(daOggiMeno){
         dataInizio = getOperationAsYYYYMMDD(daOggiMeno);

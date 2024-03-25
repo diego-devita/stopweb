@@ -131,6 +131,7 @@ export function validateArgs(command, options){
             'data': (value)=>{ return (isStringDateAsYYYYMMDD(value) || isStringDateAsDDMMYYYY(value)); },
             'dataInizio': (value)=>{ return (isStringDateAsYYYYMMDD(value) || isStringDateAsDDMMYYYY(value)); },
             'dataFine': (value)=>{ return (isStringDateAsYYYYMMDD(value) || isStringDateAsDDMMYYYY(value)); },
+            'settimana': (value) => { return ( isStringNumber(value) /*|| isBooleanTrueValue(value)*/ ); },
             'mese': (value) => { return ( isStringMonthAsMM(value) || isBooleanTrueValue(value) ); },
             'anno': isStringYearAsYYYY,
             'oggi': isBooleanTrueValue,
