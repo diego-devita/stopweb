@@ -1,6 +1,8 @@
 # Stopweb (CLI)
 
-![Alt text for the GIF](assets/usage01.gif)
+![Carrellata esempi](assets/usage01.gif)
+
+![Index api web](assets/indexapi.png)
 
 ## Variabili d'ambiente
 Il progetto utilizza le seguenti variabili d'ambiente:
@@ -8,7 +10,6 @@ Il progetto utilizza le seguenti variabili d'ambiente:
 | Nome                          | Descrizione                         | Valore Default                                 |
 | ----------------------------- | ------------------------------------| -----------------------------------------------|
 | STOPWEB_PROFILI_BASEDIR_PATH  | Il path dei profili                 | ~/.stopweb/profili                             |
-
 
 ## Pre-requisiti
 - Installa [Node.js](https://nodejs.org/en/) versione v18.19.1
@@ -23,13 +24,13 @@ git clone https://github.com/diego-devita/stopweb.git
 cd <stopweb directory>
 sudo npm install
 ```
-- Crea il symlink *stopweb* allo script entry point (./src/cli.js)
+- Crea il symlink **stopweb** allo script entry point (`./src/cli.js`)
 ```bash
 cd <stopweb directory>
 sudo npm link
 ```
 
-- Installare Chromium (verrà usato con Playwright alla login)
+- Installa Chromium (verrà usato con Playwright alla login)
 
 per maggiori dettagli: https://playwright.dev/docs/browsers
 
@@ -44,7 +45,7 @@ sudo npx playwright install --with-deps chromium
 
 I file certificato sono chiave pubblica e chiave privata necessarie ad abilitare il canale SSL over HTTP e WS. Se i file non esistono, SSL non è disponibile e neppure l'autenticazione a valle. I file sono: `key.pem` e `cert.pem` in `<profilo>/config/`.
 
-Per creare i certificati:
+Per creare i certificati (**self-signed!**):
 ```bash
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=IT/ST=Italy/L=Rome/O=stopweb/OU=stopweb/CN="
 ```
@@ -56,19 +57,19 @@ Il file `<profilo>/config/validapikeys` è un array di stringhe serializzato in 
 
 ## Creare la configurazione profilo
 
-- Inizializzare la configurazione del profilo corrente
+- Inizializza la configurazione del profilo corrente
 ```bash
 stopweb profilo --init
 ```
-- Impostare le api url usando il proprio sito aziendale
+- Imposta le api url con il proprio sito aziendale
 ```bash
 stopweb profilo --seturls <nomesito>
 ```
-- Consultare le condizioni di utilizzo
+- Consulta le condizioni di utilizzo
 ```bash
 stopweb condizioni
 ```
-- Accettare le condizioni di utilizzo
+- Accetta le condizioni di utilizzo
 ```bash
 stopweb condizioni --accetta
 ```
