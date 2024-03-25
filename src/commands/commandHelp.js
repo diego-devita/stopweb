@@ -334,6 +334,8 @@ export async function commandHelp({ showSintesi = true, comando, grid } = {}){
                 { uso: 'fetch --ieri', descrizione: 'Ieri'},
                 { uso: 'fetch --mese', descrizione: 'Mese corrente'},
                 { uso: 'fetch --mese 01', descrizione: 'Gennaio (anno corrente)'},
+                { uso: 'fetch --mese --settimana 2', descrizione: 'Settimana 2nd (LUN-DOM) (mese corrente)'},
+                { uso: 'fetch --mese 03 --settimana 1', descrizione: 'Settimana 1st (cropped) (mese Marzo, anno corrente)'},
                 { uso: 'fetch --mese 01 --anno 2023', descrizione: 'Gennaio 2023'},
                 { uso: 'fetch --data 20230101', descrizione: 'Data specifica (YYYYMMDD|DD-MM-YYYY)'},
                 { uso: 'fetch --dataInizio 20230101 --dataFine 20240101', descrizione: 'Intervallo da-a (YYYYMMDD|DD-MM-YYYY)'},
