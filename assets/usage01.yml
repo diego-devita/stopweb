@@ -1,0 +1,989 @@
+#usare con $ terminalizer render
+config:
+
+  # Specify a command to be executed
+  # like `/bin/bash -l`, `ls`, or any other commands
+  # the default is bash for Linux
+  # or powershell.exe for Windows
+  command: bash -l
+
+  # Specify the current working directory path
+  # the default is the current working directory path
+  cwd: /home/utente
+
+  # Export additional ENV variables
+  env:
+    recording: true
+
+  # Explicitly set the number of columns
+  # or use `auto` to take the current
+  # number of columns of your shell
+  cols: 109
+
+  # Explicitly set the number of rows
+  # or use `auto` to take the current
+  # number of rows of your shell
+  rows: 41
+
+  # Amount of times to repeat GIF
+  # If value is -1, play once
+  # If value is 0, loop indefinitely
+  # If value is a positive number, loop n times
+  repeat: 0
+
+  # Quality
+  # 1 - 100
+  quality: 100
+
+  # Delay between frames in ms
+  # If the value is `auto` use the actual recording delays
+  frameDelay: auto
+
+  # Maximum delay between frames in ms
+  # Ignored if the `frameDelay` isn't set to `auto`
+  # Set to `auto` to prevent limiting the max idle time
+  maxIdleTime: 2000
+
+  # The surrounding frame box
+  # The `type` can be null, window, floating, or solid`
+  # To hide the title use the value null
+  # Don't forget to add a backgroundColor style with a null as type
+  frameBox:
+    type: floating
+    title: stopweb cli
+    style:
+      border: 0px black solid
+      # boxShadow: none
+      # margin: 0px
+
+  # Add a watermark image to the rendered gif
+  # You need to specify an absolute path for
+  # the image on your machine or a URL, and you can also
+  # add your own CSS styles
+  watermark:
+    imagePath: null
+    style:
+      position: absolute
+      right: 15px
+      bottom: 15px
+      width: 100px
+      opacity: 0.9
+
+  # Cursor style can be one of
+  # `block`, `underline`, or `bar`
+  cursorStyle: block
+
+  # Font family
+  # You can use any font that is installed on your machine
+  # in CSS-like syntax
+  fontFamily: "Monaco, Lucida Console, Ubuntu Mono, Monospace"
+
+  # The size of the font
+  fontSize: 12
+
+  # The height of lines
+  lineHeight: 1
+
+  # The spacing between letters
+  letterSpacing: 0
+
+  # Theme
+  theme:
+    background: "rgba(48, 10, 36, 1)" # Ubuntu
+    #background: "transparent"
+    foreground: "#ffffff"
+    cursor: "#c7c7c7"
+    black: "#232628"
+    red: "##FF033E"
+    green: "#66FF00"
+    yellow: "#FFC72C"
+    blue: "##0000FF"
+    magenta: "#ae89fe"
+    cyan: "#708387"
+    white: "#ffffff"
+    brightBlack: "#626566"
+    brightRed: "##FF033E"
+    brightGreen: "#66FF00"
+    brightYellow: "#FFC72C"
+    brightBlue: "##0000FF"
+    brightMagenta: "#ae89fe"
+    brightCyan: "#0ff0fc"
+    brightWhite: "#ffffff"
+
+# Records,
+records:
+  - delay: 100
+    content: "\ec"
+  - delay: 100
+    content: "\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+  - delay: 1000
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "b"
+
+  - delay: 500
+    content: "\r\n------------------------------------------------------------------------------\r\n stopweb vers: \e[33m2.2.0\e[39m            \e[33mProfilo\e[39m: \e[2m/home/utente/.stopweb/profili/\e[22m\e[1m\e[33mdefault\e[39m\e[22m\r\n------------------------------------------------------------------------------\r\n\r\n Strumento per l'interrogazione del portale aziendale presenze.\r\n\r\n Uso: \e[33mstopweb [comando] [..opz]\e[39m\r\n\r\n le opzioni sono precedute da \e[33m-\e[39m o \e[33m--\e[39m e se non vi segue un valore, è \e[33mtrue\e[39m\r\n\r\n -----------------------------------------------------------------------------\r\n\r\n Comandi disponibili: \r\n\r\n \e[33mhelp\e[39m       \e[2mMostra questa schermata di aiuto -lo stesso succede senza comando\e[22m\r\n \e[33mguida\e[39m      \e[2mMostra una guida rapida per iniziare\e[22m\r\n \e[33mmanifesto\e[39m  \e[2mMostra le condizioni di utilizzo accettate\e[22m\r\n\e[2m            (sinonimi: condizioni|maniavanti|eula)\e[22m\r\n            \r\n \e[33mprofilo\e[39m    \e[2mGestione profilo\e[22m\r\n \e[33mclear\e[39m      \e[2mRimuove le informazioni conservate in <profilo>/userdata\e[22m\r\n            \r\n \e[33mlogin\e[39m      \e[2mFa la login sul sito presenze e conserva i cookie\e[22m\r\n \e[33mfetch\e[39m      \e[2mRecupera e mostra le timbrature\e[22m\r\n \e[33melenco\e[39m     \e[2mMostra l'elenco dei dipendenti\e[22m\r\n \e[33mpreferiti\e[39m  \e[2mGestisce la propria lista preferiti dei dipendenti\e[22m\r\n \e[33mrubrica\e[39m    \e[2mMostra le entry rubrica dei dipendenti\e[22m\r\n \e[33meventi\e[39m     \e[2mMostra il contenuto della coda eventi\e[22m\r\n\r\n -----------------------------------------------------------------------------\r\n\r\n Per maggiori dettagli:  \e[33mstopweb help --dettagli\e[39m\r\n                         \e[33mstopweb help --dettagli --asgrid\e[39m\r\n                         \e[33mstopweb help --dettagli [comando]\e[39m\r\n                         \e[33mstopweb help --dettagli [comando] --asgrid\e[39m\r\n\r\n------------------------------------------------------------------------------\r\n"
+
+  - delay: 100
+    content: "\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+  - delay: 1000
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "l"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "g"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: "n"
+  - delay: 500
+    content: "\r\n"
+
+  #COMANDO: stopweb login
+  - delay: 500
+    content: In attesa dell'Authenticator...
+  - delay: 800
+    content: "\e[32m\e[1mOK.\e[22m\e[39m\r\nUsername..."
+  - delay: 800
+    content: "\e[32m\e[1mOK.\e[22m\e[39m\r\nPassword..."
+  - delay: 1500
+    content: "\e[32m\e[1mOK.\e[22m\e[39m\r\n"
+  - delay: 25
+    content: "Il codice 2FA è: \e[44m\e[1m 71 \e[22m\e[49m\r\nLa pagina è in attesa..."
+  - delay: 1500
+    content: "\e[32m\e[1mOK.\e[22m\e[39m\r\n\r\n\e[32m\e[1mLogin avvenuta con successo!\e[22m\e[39m\r\n\r\nIn attesa di recuperare l'id dipendente..."
+  - delay: 1000
+    content: "\e[44m\e[1m 999 \e[22m\e[49m\r\n"
+  - delay: 111
+    content: "\r\nL'operazione è completata.\r\n"
+
+  - delay: 100
+    content: "\e]0;utente@devel-vbox:~\e\\\e]7;file://devel-vbox/home/utente\e\\\e[?2004h\e]0;utente@devel-vbox: ~\a\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+#  - delay: 500
+#    content: "stopweb fetch --oggi --colTimbratureSize 4\r\n"
+  - delay: 1000
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "f"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "c"
+  - delay: 80
+    content: "h"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "g"
+  - delay: 80
+    content: "g"
+  - delay: 80
+    content: "i"
+  - delay: 40
+    content: " "
+  - delay: 40
+    content: "-"
+  - delay: 40
+    content: "-"
+  - delay: 40
+    content: "c"
+  - delay: 40
+    content: "o"
+  - delay: 40
+    content: "l"
+  - delay: 40
+    content: "T"
+  - delay: 40
+    content: "i"
+  - delay: 40
+    content: "m"
+  - delay: 40
+    content: "b"
+  - delay: 40
+    content: "r"
+  - delay: 40
+    content: "a"
+  - delay: 40
+    content: "t"
+  - delay: 40
+    content: "u"
+  - delay: 40
+    content: "r"
+  - delay: 40
+    content: "e"
+  - delay: 40
+    content: "S"
+  - delay: 40
+    content: "i"
+  - delay: 40
+    content: "z"
+  - delay: 40
+    content: "e"
+  - delay: 40
+    content: " "
+  - delay: 40
+    content: "4"
+  - delay: 500
+    content: "\r\n"
+
+    #COMANDO stopweb fetch --oggi --colTimbratureSize 4 -> OUTPUT
+  - delay: 1000
+    content: "$---------------------------------------------------------------------------------------------------------$\r\n"
+  - delay: 16
+    content: "| DATA             | USCITA (7:12) | PRESENZA  | V/T | ASSENZA  | BP | PERM | TIMBRATURE (4)              |\r\n$---------------------------------------------------------------------------------------------------------$\r\n|                  |               |           |     |          |    |      |                             |\r\n|\e[104m\e[1m\e[1m>\e[22m\e[22m\e[49m\e[44m[25-03-2024 \e[1m\e[96mLUN\e[39m\e[22m]\e[49m\e[104m\e[1m\e[1m<\e[22m\e[22m\e[49m| 16:05(\e[31m-2:54\e[39m)  | 04:18(\e[31m1\e[39m)\e[41m\e[37m\e[1m!\e[22m\e[39m\e[49m | \e[31m2/3\e[39m | 00:41(1) |    |      | \e[36m\e[1mE\e[22m\e[39m08:12 \e[33m\e[1mU\e[22m\e[39m12:30 \e[36m\e[1mE\e[22m\e[39m\e[31m13:11\e[39m        |\r\n|                  |               |           |     |          |    |      |                             |\r\n$---------------------------------------------------------------------------------------------------------$\r\n|                  | \e[32m\e[1m+0:00\e[22m\e[39m         | 0:00      |     |          | 0  | 0:00 |                             |\r\n$---------------------------------------------------------------------------------------------------------$\r\n"
+
+  - delay: 100
+    content: "\e]0;utente@devel-vbox:~\e\\\e]7;file://devel-vbox/home/utente\e\\\e[?2004h\e]0;utente@devel-vbox: ~\a\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+#  - delay: 500
+#    content: "stopweb fetch --mese --colTimbratureSize 4\r\n"
+  - delay: 1000
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "f"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "c"
+  - delay: 80
+    content: "h"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "m"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "s"
+  - delay: 80
+    content: "e"
+  - delay: 40
+    content: " "
+  - delay: 40
+    content: "-"
+  - delay: 40
+    content: "-"
+  - delay: 40
+    content: "c"
+  - delay: 40
+    content: "o"
+  - delay: 40
+    content: "l"
+  - delay: 40
+    content: "T"
+  - delay: 40
+    content: "i"
+  - delay: 40
+    content: "m"
+  - delay: 40
+    content: "b"
+  - delay: 40
+    content: "r"
+  - delay: 40
+    content: "a"
+  - delay: 40
+    content: "t"
+  - delay: 40
+    content: "u"
+  - delay: 40
+    content: "r"
+  - delay: 40
+    content: "e"
+  - delay: 40
+    content: "S"
+  - delay: 40
+    content: "i"
+  - delay: 40
+    content: "z"
+  - delay: 40
+    content: "e"
+  - delay: 40
+    content: " "
+  - delay: 40
+    content: "4"
+  - delay: 500
+    content: "\r\n"
+
+    #COMANDO stopweb fetch --mese --colTimbratureSize 4 -> OUTPUT
+  - delay: 1000
+    content: "$---------------------------------------------------------------------------------------------------------$\r\n"
+  - delay: 5
+    content: "| DATA             | USCITA (7:12) | PRESENZA  | V/T | ASSENZA  | BP | PERM | TIMBRATURE (4)              |\r\n$---------------------------------------------------------------------------------------------------------$\r\n|                  |               |           |     |          |    |      |                             |\r\n| [01-03-2024 \e[1m\e[96mVEN\e[39m\e[22m] | 17:12(\e[32m+0:02\e[39m)  | 07:18(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:26(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m09:30 \e[33m\e[1mU\e[22m\e[39m13:41 \e[36m\e[1mE\e[22m\e[39m14:07 \e[33m\e[1mU\e[22m\e[39m17:14 |\r\n| [02-03-2024 \e[1m\e[93mSAB\e[39m\e[22m] |               |           |     |          |    |      | \e[33m\e[1mSABATO\e[22m\e[39m                      |\r\n| [03-03-2024 \e[1m\e[93mDOM\e[39m\e[22m] |               |           |     |          |    |      | \e[33m\e[1mDOMENICA\e[22m\e[39m                    |\r\n| [04-03-2024 \e[1m\e[96mLUN\e[39m\e[22m] | 17:07(\e[32m+0:00\e[39m)  | 07:22(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:20(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m09:25 \e[33m\e[1mU\e[22m\e[39m12:48 \e[36m\e[1mE\e[22m\e[39m13:08 \e[33m\e[1mU\e[22m\e[39m17:07 |\r\n| [05-03-2024 \e[1m\e[96mMAR\e[39m\e[22m] | 16:08(\e[32m+0:13\e[39m)  | 07:25(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:33(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m08:23 \e[33m\e[1mU\e[22m\e[39m12:31 \e[36m\e[1mE\e[22m\e[39m13:04 \e[33m\e[1mU\e[22m\e[39m16:21 |\r\n| [06-03-2024 \e[1m\e[96mMER\e[39m\e[22m] | 16:06(\e[32m+1:04\e[39m)  | 08:16(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:31(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m08:23 \e[33m\e[1mU\e[22m\e[39m12:34 \e[36m\e[1mE\e[22m\e[39m13:05 \e[33m\e[1mU\e[22m\e[39m17:10 |\r\n| [07-03-2024 \e[1m\e[96mGIO\e[39m\e[22m] | 16:21(\e[32m+0:48\e[39m)  | 08:00(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:32(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m08:37 \e[33m\e[1mU\e[22m\e[39m12:34 \e[36m\e[1mE\e[22m\e[39m13:06 \e[33m\e[1mU\e[22m\e[39m17:09 |\r\n| [08-03-2024 \e[1m\e[96mVEN\e[39m\e[22m] | 16:44(\e[32m+0:05\e[39m)  | 07:17(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:35(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m08:57 \e[33m\e[1mU\e[22m\e[39m12:32 \e[36m\e[1mE\e[22m\e[39m13:07 \e[33m\e[1mU\e[22m\e[39m16:49 |\r\n| [09-03-2024 \e[1m\e[93mSAB\e[39m\e[22m] |               |           |     |          |    |      | \e[33m\e[1mSABATO\e[22m\e[39m                      |\r\n| [10-03-2024 \e[1m\e[93mDOM\e[39m\e[22m] |               |           |     |          |    |      | \e[33m\e[1mDOMENICA\e[22m\e[39m                    |\r\n| [11-03-2024 \e[1m\e[96mLUN\e[39m\e[22m] | 17:13(\e[32m+0:52\e[39m)  | 08:04(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:38(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m09:23 \e[33m\e[1mU\e[22m\e[39m12:38 \e[36m\e[1mE\e[22m\e[39m13:16 \e[33m\e[1mU\e[22m\e[39m18:05 |\r\n"
+  - delay: 5
+    content: "| [12-03-2024 \e[1m\e[96mMAR\e[39m\e[22m] | 17:07(\e[32m+1:16\e[39m)  | 08:38(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:20(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m09:25 \e[33m\e[1mU\e[22m\e[39m12:50 \e[36m\e[1mE\e[22m\e[39m13:10 \e[33m\e[1mU\e[22m\e[39m18:23 |\r\n| [13-03-2024 \e[1m\e[96mMER\e[39m\e[22m] | 16:25(\e[32m+1:24\e[39m)  | 08:39(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:27(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m08:43 \e[33m\e[1mU\e[22m\e[39m12:36 \e[36m\e[1mE\e[22m\e[39m13:03 \e[33m\e[1mU\e[22m\e[39m17:49 |\r\n| [14-03-2024 \e[1m\e[96mGIO\e[39m\e[22m] | 16:37(\e[31m-0:45\e[39m)  | 06:27(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:39(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m08:46 \e[33m\e[1mU\e[22m\e[39m12:32 \e[36m\e[1mE\e[22m\e[39m13:11 \e[33m\e[1mU\e[22m\e[39m15:52 |\r\n"
+  - delay: 7
+    content: "| [15-03-2024 \e[1m\e[96mVEN\e[39m\e[22m] | 16:42(\e[32m+0:27\e[39m)  | 07:43(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:26(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m09:00 \e[33m\e[1mU\e[22m\e[39m12:35 \e[36m\e[1mE\e[22m\e[39m13:01 \e[33m\e[1mU\e[22m\e[39m17:09 |\r\n| [16-03-2024 \e[1m\e[93mSAB\e[39m\e[22m] |               |           |     |          |    |      | \e[33m\e[1mSABATO\e[22m\e[39m                      |\r\n| [17-03-2024 \e[1m\e[93mDOM\e[39m\e[22m] |               |           |     |          |    |      |                             |\r\n"
+  - delay: 11
+    content: "| [18-03-2024 \e[1m\e[96mLUN\e[39m\e[22m] | 17:30(\e[31m-0:12\e[39m)\e[44m\e[37m\e[1mP\e[22m\e[39m\e[49m | 06:47(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:48(1) | \e[32m\e[1mBP\e[22m\e[39m | 0:13 | \e[36m\e[1mE\e[22m\e[39m\e[35m\e[4m09:43\e[24m\e[39m \e[33m\e[1mU\e[22m\e[39m12:36 \e[36m\e[1mE\e[22m\e[39m13:24 \e[33m\e[1mU\e[22m\e[39m17:18 |\r\n| [19-03-2024 \e[1m\e[96mMAR\e[39m\e[22m] | 17:26(\e[31m-0:06\e[39m)  | 07:06(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:35(1) |    |      | \e[36m\e[1mE\e[22m\e[39m\e[35m\e[4m09:39\e[24m\e[39m \e[33m\e[1mU\e[22m\e[39m12:34 \e[36m\e[1mE\e[22m\e[39m13:09 \e[33m\e[1mU\e[22m\e[39m17:20 |\r\n| [20-03-2024 \e[1m\e[96mMER\e[39m\e[22m] | 17:18(\e[31m-0:15\e[39m)  | 06:57(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:38(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m09:28 \e[33m\e[1mU\e[22m\e[39m12:36 \e[36m\e[1mE\e[22m\e[39m13:14 \e[33m\e[1mU\e[22m\e[39m17:03 |\r\n| [21-03-2024 \e[1m\e[96mGIO\e[39m\e[22m] | 16:56(\e[31m-0:49\e[39m)  | 06:23(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:35(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m09:09 \e[33m\e[1mU\e[22m\e[39m12:31 \e[36m\e[1mE\e[22m\e[39m13:06 \e[33m\e[1mU\e[22m\e[39m16:07 |\r\n| [22-03-2024 \e[1m\e[96mVEN\e[39m\e[22m] | 16:31(\e[31m-0:23\e[39m)  | 06:49(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:35(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m08:44 \e[33m\e[1mU\e[22m\e[39m12:32 \e[36m\e[1mE\e[22m\e[39m13:07 \e[33m\e[1mU\e[22m\e[39m16:08 |\r\n| [23-03-2024 \e[1m\e[93mSAB\e[39m\e[22m] |               |           |     |          |    |      | \e[33m\e[1mSABATO\e[22m\e[39m                      |\r\n| [24-03-2024 \e[1m\e[93mDOM\e[39m\e[22m] |               |           |     |          |    |      | \e[33m\e[1mDOMENICA\e[22m\e[39m                    |\r\n|\e[104m\e[1m\e[1m>\e[22m\e[22m\e[49m\e[44m[25-03-2024 \e[1m\e[96mLUN\e[39m\e[22m]\e[49m\e[104m\e[1m\e[1m<\e[22m\e[22m\e[49m| 16:05(\e[31m-2:54\e[39m)  | 04:18(\e[31m1\e[39m)\e[41m\e[37m\e[1m!\e[22m\e[39m\e[49m | \e[31m2/3\e[39m | 00:41(1) |    |      | \e[36m\e[1mE\e[22m\e[39m08:12 \e[33m\e[1mU\e[22m\e[39m12:30 \e[36m\e[1mE\e[22m\e[39m\e[31m13:11\e[39m        |\r\n| \e[100m[26-03-2024 \e[1m\e[96mMAR\e[39m\e[22m]\e[49m |               |           |     |          |    |      |                             |\r\n| \e[100m[27-03-2024 \e[1m\e[96mMER\e[39m\e[22m]\e[49m |               |           |     |          |    |      |                             |\r\n| \e[100m[28-03-2024 \e[1m\e[96mGIO\e[39m\e[22m]\e[49m |               |           |     |          |    |      |                             |\r\n| \e[100m[29-03-2024 \e[1m\e[96mVEN\e[39m\e[22m]\e[49m |               |           |     |          |    |      |                             |\r\n"
+  - delay: 6
+    content: "| \e[100m[30-03-2024 \e[1m\e[93mSAB\e[39m\e[22m]\e[49m |               |           |     |          |    |      |                             |\r\n| \e[100m[31-03-2024 \e[1m\e[93mDOM\e[39m\e[22m]\e[49m |               |           |     |          |    |      |                             |\r\n|                  |               |           |     |          |    |      |                             |\r\n$---------------------------------------------------------------------------------------------------------$\r\n"
+  - delay: 6
+    content: "|                  | \e[32m\e[1m+3:41\e[22m\e[39m         | 119:11    |     |          | 15 | 0:13 |                             |\r\n$---------------------------------------------------------------------------------------------------------$\r\n"
+
+  - delay: 100
+    content: "\e]0;utente@devel-vbox:~\e\\\e]7;file://devel-vbox/home/utente\e\\\e[?2004h\e]0;utente@devel-vbox: ~\a\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+#  - delay: 500
+#    content: "stopweb fetch --daOggiMeno 4g --colTimbratureSize 4\r\n"
+  - delay: 1000
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "f"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "c"
+  - delay: 80
+    content: "h"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "d"
+  - delay: 80
+    content: "a"
+  - delay: 80
+    content: "O"
+  - delay: 80
+    content: "g"
+  - delay: 80
+    content: "g"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: "M"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "n"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "4"
+  - delay: 80
+    content: "g"
+  - delay: 40
+    content: " "
+  - delay: 40
+    content: "-"
+  - delay: 40
+    content: "-"
+  - delay: 40
+    content: "c"
+  - delay: 40
+    content: "o"
+  - delay: 40
+    content: "l"
+  - delay: 40
+    content: "T"
+  - delay: 40
+    content: "i"
+  - delay: 40
+    content: "m"
+  - delay: 40
+    content: "b"
+  - delay: 40
+    content: "r"
+  - delay: 40
+    content: "a"
+  - delay: 40
+    content: "t"
+  - delay: 40
+    content: "u"
+  - delay: 40
+    content: "r"
+  - delay: 40
+    content: "e"
+  - delay: 40
+    content: "S"
+  - delay: 40
+    content: "i"
+  - delay: 40
+    content: "z"
+  - delay: 40
+    content: "e"
+  - delay: 40
+    content: " "
+  - delay: 40
+    content: "4"
+  - delay: 500
+    content: "\r\n"
+
+    #COMANDO stopweb fetch --daOggiMeno 4g --colTimbratureSize 4 -> OUTPUT
+  - delay: 1000
+    content: "$---------------------------------------------------------------------------------------------------------$\r\n| DATA             | USCITA (7:12) | PRESENZA  | V/T | ASSENZA  | BP | PERM | TIMBRATURE (4)              |\r\n$---------------------------------------------------------------------------------------------------------$\r\n|                  |               |           |     |          |    |      |                             |\r\n| [21-03-2024 \e[1m\e[96mGIO\e[39m\e[22m] | 16:56(\e[31m-0:49\e[39m)  | 06:23(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:35(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m09:09 \e[33m\e[1mU\e[22m\e[39m12:31 \e[36m\e[1mE\e[22m\e[39m13:06 \e[33m\e[1mU\e[22m\e[39m16:07 |\r\n"
+  - delay: 7
+    content: "| [22-03-2024 \e[1m\e[96mVEN\e[39m\e[22m] | 16:31(\e[31m-0:23\e[39m)  | 06:49(\e[32m2\e[39m)  | \e[32m4/4\e[39m | 00:35(1) | \e[32m\e[1mBP\e[22m\e[39m |      | \e[36m\e[1mE\e[22m\e[39m08:44 \e[33m\e[1mU\e[22m\e[39m12:32 \e[36m\e[1mE\e[22m\e[39m13:07 \e[33m\e[1mU\e[22m\e[39m16:08 |\r\n| [23-03-2024 \e[1m\e[93mSAB\e[39m\e[22m] |               |           |     |          |    |      | \e[33m\e[1mSABATO\e[22m\e[39m                      |\r\n| [24-03-2024 \e[1m\e[93mDOM\e[39m\e[22m] |               |           |     |          |    |      | \e[33m\e[1mDOMENICA\e[22m\e[39m                    |\r\n|\e[104m\e[1m\e[1m>\e[22m\e[22m\e[49m\e[44m[25-03-2024 \e[1m\e[96mLUN\e[39m\e[22m]\e[49m\e[104m\e[1m\e[1m<\e[22m\e[22m\e[49m| 16:05(\e[31m-2:54\e[39m)  | 04:18(\e[31m1\e[39m)\e[41m\e[37m\e[1m!\e[22m\e[39m\e[49m | \e[31m2/3\e[39m | 00:41(1) |    |      | \e[36m\e[1mE\e[22m\e[39m08:12 \e[33m\e[1mU\e[22m\e[39m12:30 \e[36m\e[1mE\e[22m\e[39m\e[31m13:11\e[39m        |\r\n|                  |               |           |     |          |    |      |                             |\r\n$---------------------------------------------------------------------------------------------------------$\r\n"
+  - delay: 5
+    content: "|                  | \e[31m\e[1m-1:12\e[22m\e[39m         | 13:12     |     |          | 2  | 0:00 |                             |\r\n$---------------------------------------------------------------------------------------------------------$\r\n"
+
+  - delay: 100
+    content: "\e]0;utente@devel-vbox:~\e\\\e]7;file://devel-vbox/home/utente\e\\\e[?2004h\e]0;utente@devel-vbox: ~\a\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+#  - delay: 1000
+#    content: "stopweb fetch --oggi --json trasformato\r\n"
+  - delay: 1000
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "f"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "c"
+  - delay: 80
+    content: "h"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "g"
+  - delay: 80
+    content: "g"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "j"
+  - delay: 80
+    content: "s"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "n"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "a"
+  - delay: 80
+    content: "s"
+  - delay: 80
+    content: "f"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "m"
+  - delay: 80
+    content: "a"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 500
+    content: "\r\n"
+
+    #COMANDO stopweb fetch --oggi --json trasformato -> OUTPUT
+  - delay: 1803
+    content: "{\r\n  \"20240325\": {\r\n    \"data\": {\r\n      \"date\": \"2024-03-24T23:00:00.000Z\",\r\n      \"YYYYMMDD\": \"20240325\",\r\n      \"DDMMYYYY\": \"25032024\",\r\n      \"DDMMYYYY_slash\": \"25/03/2024\",\r\n      \"DDMMYYYY_dash\": \"25-03-2024\",\r\n      \"DDMMYYYY_space\": \"25 03 2024\",\r\n      \"DD\": \"25\",\r\n      \"MM\": \"03\",\r\n      \"YYYY\": \"2024\",\r\n      \"YY\": \"24\",\r\n      \"giornoSettimana\": \"Lunedì\",\r\n      \"giornoSettimanaU3\": \"LUN\",\r\n      \"mese\": \"Marzo\",\r\n      \"meseU3\": \"MAR\",\r\n      \"parts\": {\r\n        \"it-IT\": {\r\n          \"monthLong\": \"marzo\",\r\n          \"monthShort\": \"mar\",\r\n          \"weekdayLong\": \"lunedì\",\r\n          \"weekdayShort\": \"lun\",\r\n          \"weekdayNarrow\": \"L\"\r\n        },\r\n        \"en-US\": {\r\n          \"monthLong\": \"March\",\r\n          \"monthShort\": \"Mar\",\r\n          \"weekdayLong\": \"Monday\",\r\n          \"weekdayShort\": \"Mon\",\r\n          \"weekdayNarrow\": \"M\"\r\n        }\r\n      }\r\n    },\r\n    \"tipoGiorno\": \"Ordinario\",\r\n    \"intervalli\": {\r\n      \"anomalia\": true,\r\n      \"timbratureValide\": 2,\r\n      \"presenza\": {\r\n        \"minutiTotali\": 258,\r\n        \"ore\": 4,\r\n        \"minuti\": 18,\r\n        \"hh\": \"04\",\r\n        \"mm\": \"18\",\r\n        \"hhmm\": \"04:18\",\r\n        \"hhmm_signed_deficit\": \"+04:18\",\r\n        \"hhmm_signed_surplus\": \"-04:18\",\r\n        \"isNegative\": false,\r\n        \"h\": \"4\",\r\n        \"hmm\": \"4:18\",\r\n        \"hmm_signed_deficit\": \"+4:18\",\r\n        \"hmm_signed_surplus\": \"-4:18\"\r\n      },\r\n      \"assenza\": {\r\n        \"minutiTotali\": 41,\r\n        \"ore\": 0,\r\n        \"minuti\": 41,\r\n        \"hh\": \"00\",\r\n        \"mm\": \"41\",\r\n        \"hhmm\": \"00:41\",\r\n        \"hhmm_signed_deficit\": \"+00:41\",\r\n        \"hhmm_signed_surplus\": \"-00:41\",\r\n        \"isNegative\": false,\r\n        \"h\": \"0\",\r\n        \"hmm\": \"0:41\",\r\n        \"hmm_signed_deficit\": \"+0:41\",\r\n        \"hmm_signed_surplus\": \"-0:41\"\r\n      },\r\n      \"presenze\": [\r\n        {\r\n          \"t1\": {\r\n            \"versoU1\": \"E\",\r\n            \"verso\": \"Entrata\",\r\n            \"hhmm\": \"08:12\",\r\n            \"hh\": \"08\",\r\n            \"mm\": \"12\",\r\n            \"minuti\": 492,\r\n            \"minutiCalcolato\": 492\r\n          },\r\n          \"t2\": {\r\n            \"versoU1\": \"U\",\r\n            \"verso\": \"Uscita\",\r\n            \"hhmm\": \"12:30\",\r\n            \"hh\": \"12\",\r\n            \"mm\": \"30\",\r\n            \"minuti\": 750,\r\n            \"minutiCalcolato\": 750\r\n          },\r\n          \"delta\": {\r\n            \"minutiTotali\": 258,\r\n            \"ore\": 4,\r\n            \"minuti\": 18,\r\n            \"hh\": \"04\",\r\n            \"mm\": \"18\",\r\n            \"hhmm\": \"04:18\",\r\n            \"hhmm_signed_deficit\": \"+04:18\",\r\n            \"hhmm_signed_surplus\": \"-04:18\",\r\n            \"isNegative\": false,\r\n            \"h\": \"4\",\r\n            \"hmm\": \"4:18\",\r\n            \"hmm_signed_deficit\": \"+4:18\",\r\n            \"hmm_signed_surplus\": \"-4:18\"\r\n          }\r\n        }\r\n      ],\r\n      \"assenze\": [\r\n        {\r\n          \"t1\": {\r\n            \"versoU1\": \"U\",\r\n            \"verso\": \"Uscita\",\r\n            \"hhmm\": \"12:30\",\r\n            \"hh\": \"12\",\r\n            \"mm\": \"30\",\r\n            \"minuti\": 750,\r\n            \"minutiCalcolato\": 750\r\n          },\r\n          \"t2\": {\r\n            \"versoU1\": \"E\",\r\n            \"verso\": \"Entrata\",\r\n            \"hhmm\": \"13:11\",\r\n            \"hh\": \"13\",\r\n            \"mm\": \"11\",\r\n            \"minuti\": 791,\r\n            \"minutiCalcolato\": 791\r\n          },\r\n          \"delta\": {\r\n            \"minutiTotali\": 41,\r\n            \"ore\": 0,\r\n            \"minuti\": 41,\r\n            \"hh\": \"00\",\r\n            \"mm\": \"41\",\r\n            \"hhmm\": \"00:41\",\r\n            \"hhmm_signed_deficit\": \"+00:41\",\r\n            \"hhmm_signed_surplus\": \"-00:41\",\r\n            \"isNegative\": false,\r\n            \"h\": \"0\",\r\n            \"hmm\": \"0:41\",\r\n            \"hmm_signed_deficit\": \"+0:41\",\r\n            \"hmm_signed_surplus\": \"-0:41\"\r\n          }\r\n        }\r\n      ]\r\n    },\r\n    \"pranzo\": {\r\n      \"assenza\": {\r\n        \"t1\": {\r\n          \"versoU1\": \"U\",\r\n          \"verso\": \"Uscita\",\r\n          \"hhmm\": \"12:30\",\r\n          \"hh\": \"12\",\r\n          \"mm\": \"30\",\r\n          \"minuti\": 750,\r\n          \"minutiCalcolato\": 750\r\n        },\r\n        \"t2\": {\r\n          \"versoU1\": \"E\",\r\n          \"verso\": \"Entrata\",\r\n          \"hhmm\": \"13:11\",\r\n          \"hh\": \"13\",\r\n          \"mm\": \"11\",\r\n          \"minuti\": 791,\r\n          \"minutiCalcolato\": 791\r\n        },\r\n        \"delta\": {\r\n          \"minutiTotali\": 41,\r\n          \"ore\": 0,\r\n          \"minuti\": 41,\r\n          \"hh\": \"00\",\r\n          \"mm\": \"41\",\r\n          \"hhmm\": \"00:41\",\r\n          \"hhmm_signed_deficit\": \"+00:41\",\r\n          \"hhmm_signed_surplus\": \"-00:41\",\r\n          \"isNegative\": false,\r\n          \"h\": \"0\",\r\n          \"hmm\": \"0:41\",\r\n          \"hmm_signed_deficit\": \"+0:41\",\r\n          \"hmm_signed_surplus\": \"-0:41\"\r\n        }\r\n      },\r\n      \"deficit\": -11,\r\n      \"isValido\": true\r\n    },\r\n    \"aspettativa\": {\r\n      \"uscitaSenzaPermessi\": {\r\n        \"minutiTotali\": 965,\r\n        \"ore\": 16,\r\n        \"minuti\": 5,\r\n        \"hh\": \"16\",\r\n        \"mm\": \"05\",\r\n        \"hhmm\": \"16:05\",\r\n        \"hhmm_signed_deficit\": \"+16:05\",\r\n        \"hhmm_signed_surplus\": \"-16:05\",\r\n        \"isNegative\": false,\r\n        \"h\": \"6\",\r\n        \"hmm\": \"6:05\",\r\n        \"hmm_signed_deficit\": \"+6:05\",\r\n        \"hmm_signed_surplus\": \"-6:05\"\r\n      },\r\n      \"deficitSenzaPermessi\": {\r\n        \"minutiTotali\": 174,\r\n        \"ore\": 2,\r\n        \"minuti\": 54,\r\n        \"hh\": \"02\",\r\n        \"mm\": \"54\",\r\n        \"hhmm\": \"02:54\",\r\n        \"hhmm_signed_deficit\": \"+02:54\",\r\n        \"hhmm_signed_surplus\": \"-02:54\",\r\n        \"isNegative\": false,\r\n        \"h\": \"2\",\r\n        \"hmm\": \"2:54\",\r\n        \"hmm_signed_deficit\": \"+2:54\",\r\n        \"hmm_signed_surplus\": \"-2:54\"\r\n      },\r\n      \"uscita\": {\r\n        \"minutiTotali\": 965,\r\n        \"ore\": 16,\r\n        \"minuti\": 5,\r\n        \"hh\": \"16\",\r\n        \"mm\": \"05\",\r\n        \"hhmm\": \"16:05\",\r\n        \"hhmm_signed_deficit\": \"+16:05\",\r\n        \"hhmm_signed_surplus\": \"-16:05\",\r\n        \"isNegative\": false,\r\n        \"h\": \"6\",\r\n        \"hmm\": \"6:05\",\r\n        \"hmm_signed_deficit\": \"+6:05\",\r\n        \"hmm_signed_surplus\": \"-6:05\"\r\n      },\r\n      \"deficit\": {\r\n        \"minutiTotali\": 174,\r\n        \"ore\": 2,\r\n        \"minuti\": 54,\r\n        \"hh\": \"02\",\r\n        \"mm\": \"54\",\r\n        \"hhmm\": \"02:54\",\r\n        \"hhmm_signed_deficit\": \"+02:54\",\r\n        \"hhmm_signed_surplus\": \"-02:54\",\r\n        \"isNegative\": false,\r\n        \"h\": \"2\",\r\n        \"hmm\": \"2:54\",\r\n        \"hmm_signed_deficit\": \"+2:54\",\r\n        \"hmm_signed_surplus\": \"-2:54\"\r\n      }\r\n    },\r\n    \"timbrature\": [\r\n      {\r\n        \"versoU1\": \"E\",\r\n        \"verso\": \"Entrata\",\r\n        \"hhmm\": \"08:12\",\r\n        \"hh\": \"08\",\r\n        \"mm\": \"12\",\r\n        \"minuti\": 492,\r\n        \"minutiCalcolato\": 492\r\n      },\r\n      {\r\n        \"versoU1\": \"U\",\r\n        \"verso\": \"Uscita\",\r\n        \"hhmm\": \"12:30\",\r\n        \"hh\": \"12\",\r\n        \"mm\": \"30\",\r\n        \"minuti\": 750,\r\n        \"minutiCalcolato\": 750\r\n      },\r\n      {\r\n        \"versoU1\": \"E\",\r\n        \"verso\": \"Entrata\",\r\n        \"hhmm\": \"13:11\",\r\n        \"hh\": \"13\",\r\n        \"mm\": \"11\",\r\n        \"minuti\": 791,\r\n        \"minutiCalcolato\": 791\r\n      }\r\n    ],\r\n    \"minutiLavorati\": null,\r\n    \"buonoPasto\": false,\r\n    \"smartWorking\": false,\r\n    \"ferie\": false,\r\n    \"trasferta\": false,\r\n    \"rol\": 0,\r\n    \"minutiPermessi\": 0\r\n  }\r\n}\r\n"
+
+  - delay: 100
+    content: "\e]0;utente@devel-vbox:~\e\\\e]7;file://devel-vbox/home/utente\e\\\e[?2004h\e]0;utente@devel-vbox: ~\a\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+#  - delay: 1000
+#    content: "stopweb rubrica --preferiti\r\n"
+  - delay: 1000
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "u"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: "c"
+  - delay: 80
+    content: "a"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "f"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "i"
+  - delay: 500
+    content: "\r\n"
+
+    #COMANDO stopweb rubrica --preferiti -> OUTPUT
+  - delay: 1000
+    content: "\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37mS\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100mDESCR.\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100mNOMINATIVO--------------------\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m  OGG. \e[49m\e[39m\e[22m\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m  DOM. \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m   TELEFONO   \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m  ID \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\r\n\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mP\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mPRESEN\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mGRAVINA\e[22m\e[22m\e[39m \e[33m\e[1mLuca\e[22m\e[39m------------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 001\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  123\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.NG\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mGRITTI\e[22m\e[22m\e[39m \e[33m\e[1mAntonello\e[22m\e[39m--------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES?!\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[43m\e[1m ALTRO \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 002\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  145\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mCARNERA\e[22m\e[22m\e[39m \e[33m\e[1mNicola\e[22m\e[39m----------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[43m\e[1m ALTRO \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 003\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  234\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mPISTOLETTO\e[22m\e[22m\e[39m \e[33m\e[1mGiovanni\e[22m\e[39m-----------\e[90m\e[1m|\e[22m\e[39m\e[45m\e[1m MISS. \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 004\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  265\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mLITTIZZETTO\e[22m\e[22m\e[39m \e[33m\e[1mNedda\e[22m\e[39m-------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 005\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  269\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mCREMONESI\e[22m\e[22m\e[39m \e[33m\e[1mRodolfo\e[22m\e[39m-------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 006\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  365\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mCASALODI\e[22m\e[22m\e[39m \e[33m\e[1mAntonia\e[22m\e[39m--------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 007\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  410\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mPADOVANO\e[22m\e[22m\e[39m \e[33m\e[1mBartolomeo\e[22m\e[39m-----------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 008\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  430\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mBRICCIALDI\e[22m\e[22m\e[39m \e[33m\e[1mLiliana\e[22m\e[39m------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 009\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  431\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mGOTTI\e[22m\e[22m\e[39m \e[33m\e[1mArturo\e[22m\e[39m------------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 010\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  432\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mMODIGLIANI\e[22m\e[22m\e[39m \e[33m\e[1mGioachino\e[22m\e[39m----------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 011\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  433\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mPANZERA\e[22m\e[22m\e[39m \e[33m\e[1mGianmarco\e[22m\e[39m-------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 012\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  445\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mP\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mPRESEN\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mPIZZO\e[22m\e[22m\e[39m \e[33m\e[1mGianfranco\e[22m\e[39m--------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES?!\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES?!\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 013\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  465\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mP\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mPRESEN\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mBINAGHI\e[22m\e[22m\e[39m \e[33m\e[1mTatiana\e[22m\e[39m---------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 014\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  478\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mCARPACCIO\e[22m\e[22m\e[39m \e[33m\e[1mAlessia\e[22m\e[39m-------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 015\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  523\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mTREMONTI\e[22m\e[22m\e[39m \e[33m\e[1mMarta\e[22m\e[39m----------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 016\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  524\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mBOSIO\e[22m\e[22m\e[39m \e[33m\e[1mCamilla\e[22m\e[39m-----------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 017\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  676\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mCONTARINI\e[22m\e[22m\e[39m \e[33m\e[1mJolanda\e[22m\e[39m-------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 018\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  891\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mORTESE\e[22m\e[22m\e[39m \e[33m\e[1mPomponio\e[22m\e[39m---------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 019\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  920\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mROSIELLO\e[22m\e[22m\e[39m \e[33m\e[1mFortunata\e[22m\e[39m------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 020\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  911\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\r\n[Risultati: 20]\r\n\r\nTempo speso: 14.247ms\r\n"
+
+  - delay: 100
+    content: "\e]0;utente@devel-vbox:~\e\\\e]7;file://devel-vbox/home/utente\e\\\e[?2004h\e]0;utente@devel-vbox: ~\a\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+#  - delay: 1000
+#    content: "stopweb rubrica --gruppo roma\r\n"
+  - delay: 1000
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "u"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: "c"
+  - delay: 80
+    content: "a"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "g"
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "u"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "m"
+  - delay: 80
+    content: "a"
+  - delay: 500
+    content: "\r\n"
+
+    #COMANDO stopweb rubrica --gruppo roma -> OUTPUT
+  - delay: 1000
+    content: "\r\n\e[44m\e[1m GRUPPO: Roma \e[22m\e[49m\r\n\r\n    \r\n    \e[44m\e[1m(10/10) GRUPPO: Ufficio Personale \e[22m\e[49m\r\n    \r\n    \e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37mS\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100mDESCR.\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100mNOMINATIVO--------------------\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m  OGG. \e[49m\e[39m\e[22m\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m  DOM. \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m   TELEFONO   \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m  ID \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mP\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mPRESEN\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mGRAVINA\e[22m\e[22m\e[39m \e[33m\e[1mLuca\e[22m\e[39m------------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 001\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  123\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.NG\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mGRITTI\e[22m\e[22m\e[39m \e[33m\e[1mAntonello\e[22m\e[39m--------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES?!\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[43m\e[1m ALTRO \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 002\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  145\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mCARNERA\e[22m\e[22m\e[39m \e[33m\e[1mNicola\e[22m\e[39m----------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[43m\e[1m ALTRO \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 003\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  234\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mPISTOLETTO\e[22m\e[22m\e[39m \e[33m\e[1mGiovanni\e[22m\e[39m-----------\e[90m\e[1m|\e[22m\e[39m\e[45m\e[1m MISS. \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 004\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  265\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mLITTIZZETTO\e[22m\e[22m\e[39m \e[33m\e[1mNedda\e[22m\e[39m-------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 005\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  269\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mCREMONESI\e[22m\e[22m\e[39m \e[33m\e[1mRodolfo\e[22m\e[39m-------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 006\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  365\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mCASALODI\e[22m\e[22m\e[39m \e[33m\e[1mAntonia\e[22m\e[39m--------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 007\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  410\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mPADOVANO\e[22m\e[22m\e[39m \e[33m\e[1mBartolomeo\e[22m\e[39m-----------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 008\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  430\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mBRICCIALDI\e[22m\e[22m\e[39m \e[33m\e[1mLiliana\e[22m\e[39m------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 009\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  431\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mGOTTI\e[22m\e[22m\e[39m \e[33m\e[1mArturo\e[22m\e[39m------------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 010\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  432\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \r\n    \e[44m\e[1m(10/10) GRUPPO: Ufficio Tecnico \e[22m\e[49m\r\n    \r\n    \e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37mS\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100mDESCR.\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100mNOMINATIVO--------------------\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m  OGG. \e[49m\e[39m\e[22m\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m  DOM. \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m   TELEFONO   \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m  ID \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mMODIGLIANI\e[22m\e[22m\e[39m \e[33m\e[1mGioachino\e[22m\e[39m----------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 011\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  433\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mPANZERA\e[22m\e[22m\e[39m \e[33m\e[1mGianmarco\e[22m\e[39m-------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 012\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  445\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mP\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mPRESEN\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mPIZZO\e[22m\e[22m\e[39m \e[33m\e[1mGianfranco\e[22m\e[39m--------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES?!\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES?!\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 013\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  465\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mP\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mPRESEN\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mBINAGHI\e[22m\e[22m\e[39m \e[33m\e[1mTatiana\e[22m\e[39m---------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 014\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  478\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mCARPACCIO\e[22m\e[22m\e[39m \e[33m\e[1mAlessia\e[22m\e[39m-------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 015\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  523\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mTREMONTI\e[22m\e[22m\e[39m \e[33m\e[1mMarta\e[22m\e[39m----------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 016\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  524\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mBOSIO\e[22m\e[22m\e[39m \e[33m\e[1mCamilla\e[22m\e[39m-----------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 017\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  676\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mCONTARINI\e[22m\e[22m\e[39m \e[33m\e[1mJolanda\e[22m\e[39m-------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 018\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  891\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mORTESE\e[22m\e[22m\e[39m \e[33m\e[1mPomponio\e[22m\e[39m---------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 019\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  920\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n    \e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mROSIELLO\e[22m\e[22m\e[39m \e[33m\e[1mFortunata\e[22m\e[39m------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 020\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  911\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\r\n[Risultati: 20][Mappa: \e[32m\e[1m20\e[22m\e[39m/\e[31m\e[1m0\e[22m\e[39m]\r\n\r\nTempo speso: 15.563ms\r\n"
+
+  - delay: 100
+    content: "\e]0;utente@devel-vbox:~\e\\\e]7;file://devel-vbox/home/utente\e\\\e[?2004h\e]0;utente@devel-vbox: ~\a\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+#  - delay: 1000
+#    content: "stopweb rubrica --presenti adesso\r\n"
+  - delay: 1000
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "u"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: "c"
+  - delay: 80
+    content: "a"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "s"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "n"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "a"
+  - delay: 80
+    content: "d"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "s"
+  - delay: 80
+    content: "s"
+  - delay: 80
+    content: "o"
+  - delay: 500
+    content: "\r\n"
+
+    #COMANDO stopweb rubrica --presenti adesso -> OUTPUT
+  - delay: 1000
+    content: "\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37mS\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100mDESCR.\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100mNOMINATIVO--------------------\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m  OGG. \e[49m\e[39m\e[22m\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m  DOM. \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m   TELEFONO   \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m  ID \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\r\n\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mP\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mPRESEN\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mGRAVINA\e[22m\e[22m\e[39m \e[33m\e[1mLuca\e[22m\e[39m------------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 001\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  123\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mP\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mPRESEN\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mPIZZO\e[22m\e[22m\e[39m \e[33m\e[1mGianfranco\e[22m\e[39m--------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES?!\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES?!\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 013\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  465\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mP\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mPRESEN\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mBINAGHI\e[22m\e[22m\e[39m \e[33m\e[1mTatiana\e[22m\e[39m---------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 014\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  478\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\r\n[Risultati: 3]\r\n\r\nTempo speso: 10.053ms\r\n"
+
+  - delay: 100
+    content: "\e]0;utente@devel-vbox:~\e\\\e]7;file://devel-vbox/home/utente\e\\\e[?2004h\e]0;utente@devel-vbox: ~\a\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+#  - delay: 1000
+#    content: "stopweb rubrica --presenti domani\r\n"
+  - delay: 1000
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "u"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: "c"
+  - delay: 80
+    content: "a"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "r"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "s"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "n"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "d"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "m"
+  - delay: 80
+    content: "a"
+  - delay: 80
+    content: "n"
+  - delay: 80
+    content: "i"
+  - delay: 500
+    content: "\r\n"
+
+    #COMANDO stopweb rubrica --presenti domani -> OUTPUT
+  - delay: 1000
+    content: "\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37mS\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100mDESCR.\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100mNOMINATIVO--------------------\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m  OGG. \e[49m\e[39m\e[22m\e[1m\e[37m\e[100m\e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m  DOM. \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m   TELEFONO   \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\e[1m\e[37m\e[100m  ID \e[90m\e[1m|\e[22m\e[1m\e[39m\e[37m\e[49m\e[39m\e[22m\r\n\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mP\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1mPRESEN\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mBINAGHI\e[22m\e[22m\e[39m \e[33m\e[1mTatiana\e[22m\e[39m---------------\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 014\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  478\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mCONTARINI\e[22m\e[22m\e[39m \e[33m\e[1mJolanda\e[22m\e[39m-------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 018\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  891\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mORTESE\e[22m\e[22m\e[39m \e[33m\e[1mPomponio\e[22m\e[39m---------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 019\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  920\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mA\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[91m\e[1mASS.GI\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1mROSIELLO\e[22m\e[22m\e[39m \e[33m\e[1mFortunata\e[22m\e[39m------------\e[90m\e[1m|\e[22m\e[39m\e[44m\e[1m SMART \e[22m\e[49m\e[90m\e[1m|\e[22m\e[39m\e[92m\e[1m PRES? \e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\e[2m  06 77432 020\e[22m\e[90m\e[1m|\e[22m\e[39m\e[33m\e[2m\e[1m  911\e[22m\e[22m\e[39m\e[90m\e[1m|\e[22m\e[39m\r\n\r\n[Risultati: 4]\r\n\r\nTempo speso: 9.552ms\r\n"
+
+  - delay: 100
+    content: "\e]0;utente@devel-vbox:~\e\\\e]7;file://devel-vbox/home/utente\e\\\e[?2004h\e]0;utente@devel-vbox: ~\a\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+#  - delay: 1000
+#    content: "stopweb eventi --listen --api --ws\r\n"
+  - delay: 1000
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "o"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "b"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "v"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "n"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "l"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: "s"
+  - delay: 80
+    content: "t"
+  - delay: 80
+    content: "e"
+  - delay: 80
+    content: "n"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "a"
+  - delay: 80
+    content: "p"
+  - delay: 80
+    content: "i"
+  - delay: 80
+    content: " "
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "-"
+  - delay: 80
+    content: "w"
+  - delay: 80
+    content: "s"
+  - delay: 500
+    content: "\r\n"
+
+    #COMANDO stopweb eventi --listen --api --ws -> OUTPUT
+  - delay: 1000
+    content: "------------------------------------------------------------------------------\r\n"
+  - delay: 98
+    content: "\e[32m ●  API Server in ascolto \e[39m\e[33mhttps\e[39m://localhost:\e[33m3000\e[39m/stopweb/api\r\n"
+  - delay: 5
+    content: "\e[32m ●  WebSocket in ascolto \e[39m\e[33mwss\e[39m://localhost:\e[33m3080\e[39m\r\n\e[32m ●  L'autenticazione è accesa rispetto alle API keys valide\e[39m\r\n\e[97m------------------------------------------------------------------------------\e[39m\r\n [stopweb v.\e[33m2.1.0\e[39m] - Ascolto degli eventi\r\n\e[97m------------------------------------------------------------------------------\e[39m\r\n\e[2m delaySeconds: 600\e[22m\r\n\e[2m randomOffsetRange: -180,360\e[22m\r\n\e[97m------------------------------------------------------------------------------\e[39m\r\n\r\n Sto interrogando la rubrica preferiti..."
+  - delay: 3416
+    content: "\e[32m\e[1mOK\e[22m\e[39m\r\n Sto interrogando le timbrature..."
+  - delay: 362
+    content: "\e[32m\e[1mOK\e[22m\e[39m\r\n\e[32m\e[1m Lo stato è stato aggiornato!\e[22m\e[39m\r\n"
+  - delay: 6
+    content: " Tentativi svolti: \e[33m1\e[39m - Fallimenti: \e[33m0\e[39m - Eventi in coda: \e[33m751\e[39m (+74)\r\n Prossimo tentativo: \e[33m830\e[39m second(i) rimasti\r\n\e[2m (Premere un tasto per saltare l'attesa o CTRL-C per interrompere)\e[22m\r\n"
+  - delay: 1001
+    content: "\e[1A\e[2K\e[1A\e[2K\e[1A\e[2K Tentativi svolti: \e[33m1\e[39m - Fallimenti: \e[33m0\e[39m - Eventi in coda: \e[33m751\e[39m (+74)\r\n Prossimo tentativo: \e[33m829\e[39m second(i) rimasti\r\n\e[2m (Premere un tasto per saltare l'attesa o CTRL-C per interrompere)\e[22m\r\n"
+  - delay: 1001
+    content: "\e[1A\e[2K\e[1A\e[2K\e[1A\e[2K Tentativi svolti: \e[33m1\e[39m - Fallimenti: \e[33m0\e[39m - Eventi in coda: \e[33m751\e[39m (+74)\r\n Prossimo tentativo: \e[33m828\e[39m second(i) rimasti\r\n\e[2m (Premere un tasto per saltare l'attesa o CTRL-C per interrompere)\e[22m\r\n"
+  - delay: 1000
+    content: "\e[1A\e[2K\e[1A\e[2K\e[1A\e[2K Tentativi svolti: \e[33m1\e[39m - Fallimenti: \e[33m0\e[39m - Eventi in coda: \e[33m751\e[39m (+74)\r\n Prossimo tentativo: \e[33m827\e[39m second(i) rimasti\r\n\e[2m (Premere un tasto per saltare l'attesa o CTRL-C per interrompere)\e[22m\r\n"
+  - delay: 1001
+    content: "\e[1A\e[2K\e[1A\e[2K\e[1A\e[2K Tentativi svolti: \e[33m1\e[39m - Fallimenti: \e[33m0\e[39m - Eventi in coda: \e[33m751\e[39m (+74)\r\n Prossimo tentativo: \e[33m826\e[39m second(i) rimasti\r\n\e[2m (Premere un tasto per saltare l'attesa o CTRL-C per interrompere)\e[22m\r\n"
+  - delay: 1001
+    content: "\e[1A\e[2K\e[1A\e[2K\e[1A\e[2K\e[1A\e[2K\e[1A\e[2K\e[1A\e[2K Sto interrogando la rubrica preferiti..."
+  - delay: 1629
+    content: ^C
+  - delay: 13
+    content: "\r\n\e]0;utente@devel-vbox:~\e\\"
+  - delay: 5
+    content: "\e]7;file://devel-vbox/home/utente\e\\\e[?2004h\e]0;utente@devel-vbox: ~\a\e[01;32mutente@devel-vbox\e[00m:\e[01;34m~\e[00m$ "
+  - delay: 1000
+    content: " "

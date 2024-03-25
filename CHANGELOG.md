@@ -4,6 +4,17 @@ Tutte le modifiche significative a questo progetto verranno documentate in quest
 
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), e questo progetto aderisce a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2024-03-25
+
+### Added
+- `listen()` emette eventi nel dominio `process`
+- aggiunto endpoint per il fetch delle giornate trasformate
+- autenticazione anche con header `x-api-key` (in alternativa a cookie)
+- `index` - aggiunti tasti per fetch api su ogni endpoint
+- `index` - stilato meglio msg dal web socket
+- `index` - `startApiServer` supporta cors free
+- Nel comando `guida`, aggiunta sezione `interrogazione`
+
 ## [2.1.0] - 2024-03-20
 
 ### Added
